@@ -12,14 +12,18 @@
 	import { USER_DATA } from '$lib/stores/user-data';
 	import { PORTFOLIO_DATA, fetchPortfolioData } from '$lib/stores/portfolio-data';
 	import SendMoneyModal from '$lib/components/self/SendMoneyModal.svelte';
-	import SignInConfirmDialog from '$lib/components/self/SignInConfirmDialog.svelte';
+    import SignInConfirmDialog from '$lib/components/self/SignInConfirmDialog.svelte';
+    import SwapWidget from '$lib/components/self/SwapWidget.svelte';
+    import * as Dialog from '$lib/components/ui/dialog';
 
 	// TODO: add type definitions
 	let transactions = $state<any[]>([]);
 	let loading = $state(true);
 	let error = $state<string | null>(null);
-	let sendMoneyModalOpen = $state(false);
-	let shouldSignIn = $state(false);
+    let sendMoneyModalOpen = $state(false);
+    let shouldSignIn = $state(false);
+    let swapOpen = $state(false);
+    let swapSymbols = $state<string[]>([]);
 
 	onMount(async () => {
 		await Promise.all([loadPortfolioData(), fetchRecentTransactions()]);
@@ -64,12 +68,24 @@
 		loading = false;
 	}
 
+    async function loadSwapSymbols() {
+        try {
+            const holdingSymbols: string[] = (portfolioData?.coinHoldings || []).map((h: any) => h.symbol).filter(Boolean)
+            const res = await fetch('/api/coins/top')
+            const top = res.ok ? (await res.json()).coins ?? [] : []
+            const topSymbols: string[] = top.map((c: any) => c.symbol).filter(Boolean)
+            swapSymbols = Array.from(new Set([...(holdingSymbols || []), ...(topSymbols || [])]))
+        } catch (e) {
+            swapSymbols = (portfolioData?.coinHoldings || []).map((h: any) => h.symbol)
+        }
+    }
+
 	let portfolioData = $derived($PORTFOLIO_DATA);
 	let totalPortfolioValue = $derived(portfolioData ? portfolioData.totalValue : 0);
 	let hasHoldings = $derived(portfolioData && portfolioData.coinHoldings.length > 0);
 	let hasTransactions = $derived(transactions.length > 0);
 
-	let holdingsColumns = $derived([
+    let holdingsColumns = $derived([
 		{
 			key: 'coin',
 			label: 'Coin',
@@ -237,6 +253,10 @@
 	async function handleTransferSuccess() {
 		await Promise.all([loadPortfolioData(), fetchRecentTransactions()]);
 	}
+
+    $effect(() => {
+        if (swapOpen && swapSymbols.length === 0) loadSwapSymbols()
+    })
 </script>
 
 <SEO
@@ -249,20 +269,41 @@
 <SendMoneyModal bind:open={sendMoneyModalOpen} onSuccess={handleTransferSuccess} />
 <SignInConfirmDialog bind:open={shouldSignIn} />
 
+<Dialog.Root bind:open={swapOpen}>
+    <Dialog.Content class="sm:max-w-lg">
+        <Dialog.Header>
+            <Dialog.Title>Swap Coins</Dialog.Title>
+            <Dialog.Description>Select coins and amount to swap</Dialog.Description>
+        </Dialog.Header>
+        {#if swapSymbols.length === 0}
+            <p class="text-muted-foreground text-sm">Loading symbols…</p>
+        {:else}
+            <SwapWidget symbols={swapSymbols} />
+        {/if}
+        <Dialog.Footer>
+            <Dialog.Close asChild>
+                <Button type="button" variant="outline">Close</Button>
+            </Dialog.Close>
+        </Dialog.Footer>
+    </Dialog.Content>
+    <Dialog.Overlay />
+</Dialog.Root>
+
 <div class="container mx-auto max-w-7xl p-6">
 	<div class="mb-6 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
 		<div>
 			<h1 class="text-3xl font-bold">Portfolio</h1>
 			<p class="text-muted-foreground">Manage your investments and transactions</p>
 		</div>
-		{#if $USER_DATA}
-			<div class="flex gap-2">
-				<Button onclick={() => (sendMoneyModalOpen = true)}>
-					<Send class="h-4 w-4" />
-					Send Money
-				</Button>
-			</div>
-		{/if}
+        {#if $USER_DATA}
+            <div class="flex gap-2">
+                <Button onclick={() => (sendMoneyModalOpen = true)}>
+                    <Send class="h-4 w-4" />
+                    Send Money
+                </Button>
+                <Button variant="outline" onclick={() => (swapOpen = true)} aria-label="Open Swap" tabindex="0">Swap</Button>
+            </div>
+        {/if}
 	</div>
 
 	{#if loading}
