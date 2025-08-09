@@ -10,7 +10,7 @@ interface SwapRequestBody {
   fromSymbol: string
   toSymbol: string
   fromAmount: number
-  slippageBps?: number // default 100 (1%)
+  slippageBps?: number // ignored; swap follows AMM like SELL (no extra tolerance)
   quoteOnly?: boolean
 }
 
@@ -19,7 +19,7 @@ export async function POST({ request }) {
   if (!session?.user) throw error(401, 'Not authenticated')
 
   const body = (await request.json()) as SwapRequestBody
-  const { fromSymbol, toSymbol, fromAmount, slippageBps = 100, quoteOnly = false } = body
+  const { fromSymbol, toSymbol, fromAmount, quoteOnly = false } = body
 
   if (!fromSymbol || !toSymbol) throw error(400, 'fromSymbol and toSymbol are required')
   if (fromSymbol.toUpperCase() === toSymbol.toUpperCase()) throw error(400, 'Cannot swap the same asset')
@@ -122,7 +122,7 @@ export async function POST({ request }) {
     const effectivePriceTo = baseOut / coinsBought // base per toCoin
     const priceImpactFrom = ((newFromPoolBase / newFromPoolCoin) / (fromPoolBase / fromPoolCoin) - 1) * 100
     const priceImpactTo = ((newToPoolBase / newToPoolCoin) / (toPoolBase / toPoolCoin) - 1) * 100
-    const minCoinsOut = coinsBought * (1 - slippageBps / 10_000)
+    const minCoinsOut = coinsBought // No extra tolerance; mirrors SELL behavior
 
     // Quote path: return preview only
     if (quoteOnly) {
@@ -143,8 +143,7 @@ export async function POST({ request }) {
       })
     }
 
-    // Enforce slippage
-    if (coinsBought < minCoinsOut) throw error(400, 'Slippage exceeded')
+    // No separate slippage tolerance enforcement (same as SELL)
 
     // Update user portfolio: subtract fromCoin, add toCoin
     const newFromQty = userQty - fromAmount

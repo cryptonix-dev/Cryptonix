@@ -28,8 +28,8 @@ import { ArrowLeftRight } from 'lucide-svelte'
 	let fromSymbol = $state<string>('BTC')
 	let toSymbol = $state<string>('ETH')
 	let fromAmount = $state<number>(0)
-    // Fixed slippage tolerance at 1.0%
-    let slippageBps = $state<number>(100)
+    // Slippage tolerance matches SELL behavior (no extra tolerance)
+    let slippageBps = $state<number>(0)
 	let isQuoting = $state(false)
 	let isSwapping = $state(false)
 	let quote: QuoteResponse['quote'] | null = $state(null)
@@ -154,7 +154,7 @@ import { ArrowLeftRight } from 'lucide-svelte'
         <div class="space-y-1">
             <Label>Slippage</Label>
             <div class="text-muted-foreground rounded-md border p-2 text-xs">
-                Slippage tolerance is fixed at 1.0% to protect against price movement during the swap.
+                Slippage tolerance follows SELL trades — no extra tolerance is applied beyond AMM price impact.
             </div>
         </div>
 	</div>
