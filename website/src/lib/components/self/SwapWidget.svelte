@@ -5,7 +5,8 @@
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger } from '$lib/components/ui/select'
 	import { toast } from 'svelte-sonner'
 	import { onMount } from 'svelte'
-import { ArrowLeftRight } from 'lucide-svelte'
+import { ArrowLeftRight, Info } from 'lucide-svelte'
+import { Tooltip, TooltipContent, TooltipTrigger } from '$lib/components/ui/tooltip'
 
 	interface QuoteResponse {
 		success: boolean
@@ -30,12 +31,13 @@ import { ArrowLeftRight } from 'lucide-svelte'
 	let fromAmount = $state<number>(0)
     // Slippage tolerance matches SELL behavior (no extra tolerance)
     let slippageBps = $state<number>(0)
-	let isQuoting = $state(false)
+    let isQuoting = $state(false)
 	let isSwapping = $state(false)
 	let quote: QuoteResponse['quote'] | null = $state(null)
     let quoteError = $state<string | null>(null)
+    let holdingsBySymbol = $state<Record<string, number>>({})
 
-    onMount(() => {
+    onMount(async () => {
         if (symbols.length >= 2) {
             fromSymbol = symbols[0]
             toSymbol = symbols[1] === symbols[0] ? (symbols[2] || (symbols[0] !== 'BTC' ? 'BTC' : 'ETH')) : symbols[1]
@@ -43,6 +45,19 @@ import { ArrowLeftRight } from 'lucide-svelte'
             fromSymbol = symbols[0]
             toSymbol = symbols[0] !== 'BTC' ? 'BTC' : 'ETH'
         }
+
+        // Load holdings to enable Max button
+        try {
+            const res = await fetch('/api/portfolio/total')
+            if (res.ok) {
+                const data = await res.json()
+                const map: Record<string, number> = {}
+                for (const h of (data?.coinHoldings ?? [])) {
+                    if (h?.symbol) map[h.symbol] = Number(h.quantity) || 0
+                }
+                holdingsBySymbol = map
+            }
+        } catch {}
     })
 
     async function fetchQuote() {
@@ -102,6 +117,16 @@ import { ArrowLeftRight } from 'lucide-svelte'
 		quote = null
 		if (fromAmount > 0) fetchQuote()
 	}
+
+    export async function submitSwap() {
+        await handleSwap()
+    }
+
+    function handleMaxClick() {
+        const max = holdingsBySymbol[fromSymbol] || 0
+        fromAmount = max
+        fetchQuote()
+    }
 </script>
 
 <div class="space-y-4">
@@ -146,25 +171,33 @@ import { ArrowLeftRight } from 'lucide-svelte'
 		</div>
 	</div>
 
-	<div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
-		<div class="space-y-2 sm:col-span-2">
-			<Label for="amount">Amount ({fromSymbol})</Label>
-			<Input id="amount" type="number" min="0" step="any" bind:value={fromAmount} on:input={fetchQuote} />
-		</div>
+    <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+        <div class="space-y-2 sm:col-span-2">
+            <Label for="amount">Amount ({fromSymbol})</Label>
+            <div class="flex items-center gap-2">
+                <Button type="button" variant="outline" size="sm" onclick={handleMaxClick} aria-label="Set max" tabindex="0">Max</Button>
+                <Input id="amount" class="flex-1" type="number" min="0" step="any" bind:value={fromAmount} on:input={fetchQuote} />
+            </div>
+            {#if quote}
+                <p class="text-muted-foreground text-xs">Est. you receive: <span class="font-medium">{quote.coinsOut.toFixed(6)} {toSymbol}</span></p>
+            {/if}
+        </div>
         <div class="space-y-1">
-            <Label>Slippage</Label>
-            <div class="text-muted-foreground rounded-md border p-2 text-xs">
-                Slippage tolerance follows SELL trades — no extra tolerance is applied beyond AMM price impact.
+            <div class="flex items-center gap-2">
+                <Label>Slippage</Label>
+                <Tooltip>
+                    <TooltipTrigger>
+                        <Info class="h-4 w-4" />
+                    </TooltipTrigger>
+                    <TooltipContent>
+                        Slippage tolerance follows SELL trades — no extra tolerance beyond AMM price impact.
+                    </TooltipContent>
+                </Tooltip>
             </div>
         </div>
 	</div>
 
-    <div class="flex items-center gap-2">
-        <Button type="button" onclick={handleSwap} disabled={isSwapping || !fromAmount || fromAmount <= 0 || fromSymbol===toSymbol} aria-label="Swap" tabindex="0">
-            <ArrowLeftRight class="h-4 w-4" />
-            {isSwapping ? 'Swapping…' : 'Swap'}
-        </Button>
-    </div>
+    <!-- Swap button is provided by parent modal footer -->
 
 	{#if isQuoting}
 		<p class="text-sm text-muted-foreground">Getting quote…</p>

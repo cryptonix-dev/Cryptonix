@@ -24,6 +24,7 @@
     let shouldSignIn = $state(false);
     let swapOpen = $state(false);
     let swapSymbols = $state<string[]>([]);
+    let swapWidgetRef: any = $state(null);
 
 	onMount(async () => {
 		await Promise.all([loadPortfolioData(), fetchRecentTransactions()]);
@@ -278,12 +279,16 @@
         {#if swapSymbols.length === 0}
             <p class="text-muted-foreground text-sm">Loading symbols…</p>
         {:else}
-            <SwapWidget symbols={swapSymbols} />
+            <SwapWidget bind:this={swapWidgetRef} symbols={swapSymbols} />
         {/if}
-        <Dialog.Footer>
+        <Dialog.Footer class="justify-end gap-2">
             <Dialog.Close asChild>
-                <Button type="button" variant="outline">Close</Button>
+                <Button type="button" variant="outline">Cancel</Button>
             </Dialog.Close>
+            <Button type="button" onclick={() => swapWidgetRef?.submitSwap?.()} aria-label="Swap" tabindex="0">
+                <ArrowLeftRight class="h-4 w-4" />
+                Swap
+            </Button>
         </Dialog.Footer>
     </Dialog.Content>
     <Dialog.Overlay />

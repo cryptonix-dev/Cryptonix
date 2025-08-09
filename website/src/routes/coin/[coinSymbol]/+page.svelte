@@ -42,6 +42,7 @@
     let buyModalOpen = $state(false);
 	let sellModalOpen = $state(false);
     let swapOpen = $state(false);
+    let swapWidgetRef: any = $state(null);
 	let selectedTimeframe = $state(data.timeframe || '1m');
 	let lastPriceUpdateTime = 0;
 	let shouldSignIn = $state(false);
@@ -442,11 +443,15 @@
                 <Dialog.Title>Swap {coin.symbol}</Dialog.Title>
                 <Dialog.Description>Swap between coins using AMM routing</Dialog.Description>
             </Dialog.Header>
-            <SwapWidget symbols={[coin.symbol]} />
-            <Dialog.Footer>
+            <SwapWidget bind:this={swapWidgetRef} symbols={[coin.symbol]} />
+            <Dialog.Footer class="justify-end gap-2">
                 <Dialog.Close asChild>
-                    <Button type="button" variant="outline">Close</Button>
+                    <Button type="button" variant="outline">Cancel</Button>
                 </Dialog.Close>
+                <Button type="button" onclick={() => swapWidgetRef?.submitSwap?.()} aria-label="Swap" tabindex="0">
+                    <ArrowLeftRight class="h-4 w-4" />
+                    Swap
+                </Button>
             </Dialog.Footer>
         </Dialog.Content>
         <Dialog.Overlay />
