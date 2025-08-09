@@ -5,6 +5,7 @@
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger } from '$lib/components/ui/select'
 	import { toast } from 'svelte-sonner'
 	import { onMount } from 'svelte'
+import { ArrowLeftRight } from 'lucide-svelte'
 
 	interface QuoteResponse {
 		success: boolean
@@ -27,20 +28,28 @@ import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger } from '$
 	let fromSymbol = $state<string>('BTC')
 	let toSymbol = $state<string>('ETH')
 	let fromAmount = $state<number>(0)
-	let slippageBps = $state<number>(100)
+    // Fixed slippage tolerance at 1.0%
+    let slippageBps = $state<number>(100)
 	let isQuoting = $state(false)
 	let isSwapping = $state(false)
 	let quote: QuoteResponse['quote'] | null = $state(null)
+    let quoteError = $state<string | null>(null)
 
-	onMount(() => {
-		if (symbols.length >= 2) {
-			fromSymbol = symbols[0]
-			toSymbol = symbols[1]
-		}
-	})
+    onMount(() => {
+        if (symbols.length >= 2) {
+            fromSymbol = symbols[0]
+            toSymbol = symbols[1] === symbols[0] ? (symbols[2] || (symbols[0] !== 'BTC' ? 'BTC' : 'ETH')) : symbols[1]
+        } else if (symbols.length === 1) {
+            fromSymbol = symbols[0]
+            toSymbol = symbols[0] !== 'BTC' ? 'BTC' : 'ETH'
+        }
+    })
 
-	async function fetchQuote() {
-		if (!fromAmount || fromAmount <= 0) return
+    async function fetchQuote() {
+        quoteError = null
+        if (!fromAmount || fromAmount <= 0) return
+        if (!fromSymbol || !toSymbol) return
+        if (fromSymbol === toSymbol) { quote = null; quoteError = 'Select two different coins'; return }
 		isQuoting = true
 		quote = null
 		try {
@@ -49,11 +58,15 @@ import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger } from '$
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({ fromSymbol, toSymbol, fromAmount, slippageBps, quoteOnly: true })
 			})
-			if (!res.ok) throw new Error(await res.text())
+            if (!res.ok) {
+                const errText = await res.text()
+                throw new Error(errText || 'Quote failed')
+            }
 			const data = (await res.json()) as QuoteResponse
 			quote = data.quote
-		} catch (e) {
-			toast.error('Failed to fetch quote')
+        } catch (e: any) {
+            quote = null
+            quoteError = typeof e?.message === 'string' ? e.message : 'Failed to fetch quote'
 		} finally {
 			isQuoting = false
 		}
@@ -92,7 +105,7 @@ import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger } from '$
 </script>
 
 <div class="space-y-4">
-	<div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+    <div class="grid grid-cols-1 items-end gap-4 sm:grid-cols-3">
 		<div class="space-y-2">
 			<Label for="from">From</Label>
 			<Select bind:value={fromSymbol} on:change={fetchQuote}>
@@ -106,7 +119,19 @@ import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger } from '$
 				</SelectContent>
 			</Select>
 		</div>
-		<div class="space-y-2">
+        <div class="flex items-center justify-center">
+            <button
+                type="button"
+                class="bg-muted hover:bg-muted/80 text-foreground focus-visible:outline-ring inline-flex h-9 w-9 items-center justify-center rounded-full transition-colors"
+                aria-label="Swap selected coins"
+                tabindex="0"
+                onclick={handleFlip}
+                onkeydown={(e) => e.key === 'Enter' && handleFlip()}
+            >
+                <ArrowLeftRight class="h-4 w-4" />
+            </button>
+        </div>
+        <div class="space-y-2">
 			<Label for="to">To</Label>
 			<Select bind:value={toSymbol} on:change={fetchQuote}>
                 <SelectTrigger id="to">{toSymbol || 'Select coin'}</SelectTrigger>
@@ -126,26 +151,32 @@ import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger } from '$
 			<Label for="amount">Amount ({fromSymbol})</Label>
 			<Input id="amount" type="number" min="0" step="any" bind:value={fromAmount} on:input={fetchQuote} />
 		</div>
-		<div class="space-y-2">
-        <Label for="slippage">Slippage (%)</Label>
-            <Input id="slippage" type="number" min="0" step="0.1" value={(slippageBps/100).toString()} on:input={(e) => { const v = Number((e.currentTarget as HTMLInputElement).value); slippageBps = Math.max(0, Math.round((isFinite(v) ? v : 0) * 100)); fetchQuote() }} />
-		</div>
+        <div class="space-y-1">
+            <Label>Slippage</Label>
+            <div class="text-muted-foreground rounded-md border p-2 text-xs">
+                Slippage tolerance is fixed at 1.0% to protect against price movement during the swap.
+            </div>
+        </div>
 	</div>
 
-	<div class="flex items-center gap-2">
-		<Button type="button" variant="secondary" onclick={handleFlip} aria-label="Flip" tabindex="0">Flip</Button>
-		<Button type="button" onclick={handleSwap} disabled={isSwapping || !fromAmount || fromAmount <= 0} aria-label="Swap" tabindex="0">{isSwapping ? 'Swapping…' : 'Swap'}</Button>
-	</div>
+    <div class="flex items-center gap-2">
+        <Button type="button" onclick={handleSwap} disabled={isSwapping || !fromAmount || fromAmount <= 0 || fromSymbol===toSymbol} aria-label="Swap" tabindex="0">
+            <ArrowLeftRight class="h-4 w-4" />
+            {isSwapping ? 'Swapping…' : 'Swap'}
+        </Button>
+    </div>
 
 	{#if isQuoting}
 		<p class="text-sm text-muted-foreground">Getting quote…</p>
-	{:else if quote}
+    {:else if quote}
 		<div class="rounded-md border p-3 text-sm">
 			<div class="flex justify-between"><span>Estimated Output</span><span class="font-medium">{quote.coinsOut.toFixed(6)} {toSymbol}</span></div>
 			<div class="flex justify-between"><span>Minimum Received</span><span>{quote.minCoinsOut.toFixed(6)} {toSymbol}</span></div>
 			<div class="flex justify-between"><span>Intermediary (Base)</span><span>{quote.baseOut.toFixed(6)}</span></div>
 			<div class="flex justify-between"><span>Price Impact</span><span>{quote.priceImpactFrom.toFixed(2)}% → {quote.priceImpactTo.toFixed(2)}%</span></div>
 		</div>
+    {:else if quoteError}
+        <p class="text-destructive text-sm">{quoteError}</p>
 	{/if}
 </div>
 

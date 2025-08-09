@@ -27,7 +27,10 @@
 	import { getPublicUrl, getTimeframeInSeconds, timeToLocal } from '$lib/utils.js';
 	import { websocketController, type PriceUpdate, isConnectedStore } from '$lib/stores/websocket';
 	import SEO from '$lib/components/self/SEO.svelte';
-	import SignInConfirmDialog from '$lib/components/self/SignInConfirmDialog.svelte';
+    import SignInConfirmDialog from '$lib/components/self/SignInConfirmDialog.svelte';
+    import SwapWidget from '$lib/components/self/SwapWidget.svelte';
+    import * as Dialog from '$lib/components/ui/dialog';
+    import { ArrowLeftRight } from 'lucide-svelte';
 
 	const { data } = $props();
 	let coinSymbol = $derived(data.coinSymbol);
@@ -36,8 +39,9 @@
 	let chartData = $state(data.chartData);
 	let volumeData = $state(data.volumeData);
 	let userHolding = $state(0);
-	let buyModalOpen = $state(false);
+    let buyModalOpen = $state(false);
 	let sellModalOpen = $state(false);
+    let swapOpen = $state(false);
 	let selectedTimeframe = $state(data.timeframe || '1m');
 	let lastPriceUpdateTime = 0;
 	let shouldSignIn = $state(false);
@@ -432,6 +436,21 @@
 		{userHolding}
 		onSuccess={handleTradeSuccess}
 	/>
+    <Dialog.Root bind:open={swapOpen}>
+        <Dialog.Content class="sm:max-w-lg">
+            <Dialog.Header>
+                <Dialog.Title>Swap {coin.symbol}</Dialog.Title>
+                <Dialog.Description>Swap between coins using AMM routing</Dialog.Description>
+            </Dialog.Header>
+            <SwapWidget symbols={[coin.symbol]} />
+            <Dialog.Footer>
+                <Dialog.Close asChild>
+                    <Button type="button" variant="outline">Close</Button>
+                </Dialog.Close>
+            </Dialog.Footer>
+        </Dialog.Content>
+        <Dialog.Overlay />
+    </Dialog.Root>
 {/if}
 <div class="container mx-auto max-w-7xl p-6">
 	{#if loading}
@@ -595,7 +614,7 @@
 						<Card.Content>
 							{#if $USER_DATA}
 								<div class="space-y-3">
-									<Button
+                                    <Button
 										class="w-full"
 										variant="default"
 										size="lg"
@@ -605,6 +624,16 @@
 										<TrendingUp class="h-4 w-4" />
 										Buy {coin.symbol}
 									</Button>
+                                    <Button
+                                        class="w-full"
+                                        variant="secondary"
+                                        size="lg"
+                                        onclick={() => (swapOpen = true)}
+                                        disabled={!coin.isListed || !canTrade}
+                                    >
+                                        <ArrowLeftRight class="h-4 w-4" />
+                                        Swap
+                                    </Button>
 									<Button
 										class="w-full"
 										variant="outline"
