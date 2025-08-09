@@ -2,7 +2,7 @@
 	import { Button } from '$lib/components/ui/button'
 	import { Input } from '$lib/components/ui/input'
 	import { Label } from '$lib/components/ui/label'
-	import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '$lib/components/ui/select'
+import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger } from '$lib/components/ui/select'
 	import { toast } from 'svelte-sonner'
 	import { onMount } from 'svelte'
 
@@ -96,9 +96,7 @@
 		<div class="space-y-2">
 			<Label for="from">From</Label>
 			<Select bind:value={fromSymbol} on:change={fetchQuote}>
-				<SelectTrigger id="from">
-					<SelectValue placeholder="Select coin" />
-				</SelectTrigger>
+                <SelectTrigger id="from">{fromSymbol || 'Select coin'}</SelectTrigger>
 				<SelectContent>
 					<SelectGroup>
 						{#each symbols as sym}
@@ -111,9 +109,7 @@
 		<div class="space-y-2">
 			<Label for="to">To</Label>
 			<Select bind:value={toSymbol} on:change={fetchQuote}>
-				<SelectTrigger id="to">
-					<SelectValue placeholder="Select coin" />
-				</SelectTrigger>
+                <SelectTrigger id="to">{toSymbol || 'Select coin'}</SelectTrigger>
 				<SelectContent>
 					<SelectGroup>
 						{#each symbols as sym}
