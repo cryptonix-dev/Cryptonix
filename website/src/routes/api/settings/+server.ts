@@ -1,4 +1,5 @@
 import { auth } from '$lib/auth';
+import { clearUserCache } from '$lib/../hooks.server';
 import { uploadProfilePicture } from '$lib/server/s3';
 import { error, json } from '@sveltejs/kit';
 import { db } from '$lib/server/db';
@@ -102,6 +103,9 @@ export async function POST({ request }) {
     await db.update(user)
         .set(updates)
         .where(eq(user.id, Number(session.user.id)));
+
+    // Invalidate session cache so fresh user data (including image) is returned on next load
+    try { clearUserCache(session.user.id) } catch {}
 
     return json({ success: true });
 }

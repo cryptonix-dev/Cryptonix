@@ -21,6 +21,7 @@
 			const response = await fetch(`/api/user/${userId}`);
 			if (response.ok) {
 				userData = await response.json();
+				console.log('Fetched user data:', userData);
 			} else {
 				error = true;
 			}

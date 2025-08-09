@@ -1,4 +1,4 @@
-import { PUBLIC_B2_BUCKET, PUBLIC_B2_ENDPOINT } from "$env/static/public";
+import { PUBLIC_SUPABASE_URL } from "$env/static/public";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { volumeSettings } from '$lib/stores/volume-settings';
@@ -31,7 +31,11 @@ export function getTimeBasedGreeting(name: string): string {
 
 export function getPublicUrl(key: string | null): string | null {
     if (!key) return null;
-    return `/api/proxy/s3/${key}`;
+    const BUCKET_NAME = 'bucket';
+    const baseUrl = `${PUBLIC_SUPABASE_URL}/storage/v1/object/public/${BUCKET_NAME}/${key}`;
+    // Bust cache for avatar updates that reuse the same key
+    if (key.startsWith('avatars/')) return `${baseUrl}?v=${Date.now()}`;
+    return baseUrl;
 }
 
 export function debounce(func: (...args: any[]) => void, wait: number) {
