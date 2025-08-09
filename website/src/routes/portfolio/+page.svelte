@@ -7,7 +7,7 @@
 	import { formatPrice, formatValue, formatQuantity, formatDate } from '$lib/utils';
 	import { onMount } from 'svelte';
 	import { toast } from 'svelte-sonner';
-	import { TrendingUp, DollarSign, Wallet, Receipt, Send } from 'lucide-svelte';
+    import { TrendingUp, DollarSign, Wallet, Receipt, Send, ArrowLeftRight } from 'lucide-svelte';
 	import { goto } from '$app/navigation';
 	import { USER_DATA } from '$lib/stores/user-data';
 	import { PORTFOLIO_DATA, fetchPortfolioData } from '$lib/stores/portfolio-data';
@@ -301,7 +301,10 @@
                     <Send class="h-4 w-4" />
                     Send Money
                 </Button>
-                <Button variant="outline" onclick={() => (swapOpen = true)} aria-label="Open Swap" tabindex="0">Swap</Button>
+                <Button variant="outline" onclick={() => (swapOpen = true)} aria-label="Open Swap" tabindex="0">
+                    <ArrowLeftRight class="h-4 w-4" />
+                    Swap
+                </Button>
             </div>
         {/if}
 	</div>
