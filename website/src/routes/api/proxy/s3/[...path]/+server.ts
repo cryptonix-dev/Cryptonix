@@ -1,5 +1,5 @@
 import { PUBLIC_B2_BUCKET, PUBLIC_B2_ENDPOINT } from "$env/static/public";
-import { error } from '@sveltejs/kit';
+import { error, isHttpError } from '@sveltejs/kit';
 
 export async function GET({ params, request }) {
     const path = params.path;
@@ -9,6 +9,9 @@ export async function GET({ params, request }) {
     }
 
     try {
+        if (!PUBLIC_B2_ENDPOINT || !PUBLIC_B2_BUCKET) {
+            throw error(503, 'Storage not configured');
+        }
         const s3Url = `${PUBLIC_B2_ENDPOINT}/${PUBLIC_B2_BUCKET}/${path}`;
         const response = await fetch(s3Url);
 
@@ -39,6 +42,7 @@ export async function GET({ params, request }) {
             }
         });
     } catch (e) {
+        if (isHttpError(e)) throw e;
         console.error('Proxy error:', e);
         throw error(500, 'Failed to proxy S3 request');
     }

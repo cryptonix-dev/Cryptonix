@@ -30,9 +30,9 @@
 	const tips: Tip[] = [
 		{
 			id: 1,
-			title: 'Welcome to Rugplay!',
+			title: 'Welcome to Cryptonix!',
 			description:
-				'Rugplay is a cryptocurrency trading simulator where you can practice trading without real financial risk. Start with virtual money, create coins, bet on prediction markets, and most importantly, rugpull!',
+				'Cryptonix is a cryptocurrency trading simulator where you can practice trading without real financial risk. Start with virtual money, create coins, bet on prediction markets, and most importantly, rugpull!',
 			icon: BookOpen,
 			image: '/tips/cover.avif'
 		},
