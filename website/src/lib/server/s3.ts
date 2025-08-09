@@ -1,47 +1,47 @@
-import { S3Client, GetObjectCommand, PutObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3';
-import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
-import { PRIVATE_B2_KEY_ID, PRIVATE_B2_APP_KEY } from '$env/static/private';
-import { PUBLIC_B2_BUCKET, PUBLIC_B2_ENDPOINT, PUBLIC_B2_REGION } from '$env/static/public';
+import { createClient } from '@supabase/supabase-js';
 import { processImage } from './image.js';
+import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
 
-const s3Client = new S3Client({
-    endpoint: PUBLIC_B2_ENDPOINT,
-    region: PUBLIC_B2_REGION,
-    credentials: {
-        accessKeyId: PRIVATE_B2_KEY_ID,
-        secretAccessKey: PRIVATE_B2_APP_KEY
-    },
-    forcePathStyle: true,
-    requestChecksumCalculation: 'WHEN_REQUIRED',
-    responseChecksumValidation: 'WHEN_REQUIRED',
-});
+// Assuming PUBLIC_B2_BUCKET will be used as the Supabase Storage bucket name
+// from the .env file. If the user wants a different bucket, they need to specify.
+import { PUBLIC_B2_BUCKET } from '$env/static/public';
 
-export async function generatePresignedUrl(key: string, contentType: string): Promise<string> {
-    const command = new PutObjectCommand({
-        Bucket: PUBLIC_B2_BUCKET,
-        Key: key,
-        ContentType: contentType
-    });
+const supabase = createClient(PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY);
+const SUPABASE_STORAGE_BUCKET = PUBLIC_B2_BUCKET; // Using the existing env var for bucket name
 
-    return getSignedUrl(s3Client, command, { expiresIn: 3600 }); // 1 hour
+export async function generatePresignedUrl(key: string, _contentType: string): Promise<string> {
+    const { data, error } = await supabase
+        .storage
+        .from(SUPABASE_STORAGE_BUCKET)
+        .createSignedUrl(key, 3600); // 1 hour expiration
+
+    if (error) {
+        console.error('Error generating signed URL:', error);
+        throw error;
+    }
+    return data.signedUrl;
 }
 
 export async function deleteObject(key: string): Promise<void> {
-    const command = new DeleteObjectCommand({
-        Bucket: PUBLIC_B2_BUCKET,
-        Key: key
-    });
+    const { error } = await supabase
+        .storage
+        .from(SUPABASE_STORAGE_BUCKET)
+        .remove([key]);
 
-    await s3Client.send(command);
+    if (error) {
+        console.error('Error deleting object:', error);
+        throw error;
+    }
 }
 
 export async function generateDownloadUrl(key: string): Promise<string> {
-    const command = new GetObjectCommand({
-        Bucket: PUBLIC_B2_BUCKET,
-        Key: key
-    });
-
-    return getSignedUrl(s3Client, command, { expiresIn: 3600 });
+    const { data } = supabase
+        .storage
+        .from(SUPABASE_STORAGE_BUCKET)
+        .getPublicUrl(key);
+    
+    // Supabase getPublicUrl returns an object with `publicUrl` property
+    return data.publicUrl;
 }
 
 export async function uploadProfilePicture(
@@ -62,16 +62,19 @@ export async function uploadProfilePicture(
     
     const key = `avatars/${identifier}.webp`;
 
-    const command = new PutObjectCommand({
-        Bucket: PUBLIC_B2_BUCKET,
-        Key: key,
-        Body: processedImage.buffer,
-        ContentType: processedImage.contentType,
-        ContentLength: processedImage.size,
-    });
+    const { data, error } = await supabase
+        .storage
+        .from(SUPABASE_STORAGE_BUCKET)
+        .upload(key, processedImage.buffer, {
+            contentType: processedImage.contentType,
+            upsert: true // Overwrite if file exists
+        });
 
-    await s3Client.send(command);
-    return key;
+    if (error) {
+        console.error('Error uploading profile picture:', error);
+        throw error;
+    }
+    return data.path; // Supabase returns the path of the uploaded file
 }
 
 export async function uploadCoinIcon(
@@ -92,16 +95,17 @@ export async function uploadCoinIcon(
 
     const key = `coins/${coinSymbol.toLowerCase()}.webp`;
 
-    const command = new PutObjectCommand({
-        Bucket: PUBLIC_B2_BUCKET,
-        Key: key,
-        Body: processedImage.buffer,
-        ContentType: processedImage.contentType,
-        ContentLength: processedImage.size,
-    });
+    const { data, error } = await supabase
+        .storage
+        .from(SUPABASE_STORAGE_BUCKET)
+        .upload(key, processedImage.buffer, {
+            contentType: processedImage.contentType,
+            upsert: true // Overwrite if file exists
+        });
 
-    await s3Client.send(command);
-    return key;
+    if (error) {
+        console.error('Error uploading coin icon:', error);
+        throw error;
+    }
+    return data.path; // Supabase returns the path of the uploaded file
 }
-
-export { s3Client };
