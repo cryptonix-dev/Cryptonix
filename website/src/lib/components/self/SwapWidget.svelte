@@ -131,8 +131,8 @@
 			<Input id="amount" type="number" min="0" step="any" bind:value={fromAmount} on:input={fetchQuote} />
 		</div>
 		<div class="space-y-2">
-			<Label for="slippage">Slippage (%)</Label>
-			<Input id="slippage" type="number" min="0" step="0.1" bind:value={$derived(slippageBps/100)} on:input={(e) => { const v = Number(e.currentTarget.value); slippageBps = Math.max(0, Math.round(v * 100)) ; fetchQuote() }} />
+        <Label for="slippage">Slippage (%)</Label>
+            <Input id="slippage" type="number" min="0" step="0.1" value={(slippageBps/100).toString()} on:input={(e) => { const v = Number((e.currentTarget as HTMLInputElement).value); slippageBps = Math.max(0, Math.round((isFinite(v) ? v : 0) * 100)); fetchQuote() }} />
 		</div>
 	</div>
 
