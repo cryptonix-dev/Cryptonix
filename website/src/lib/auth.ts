@@ -6,7 +6,7 @@ import { env as publicEnv } from '$env/dynamic/public';
 import { db } from "./server/db";
 import * as schema from "./server/db/schema";
 import { generateUsername } from "./utils/random";
-import { uploadProfilePicture } from "./server/s3";
+import { uploadProfilePictureRaw } from "./server/s3";
 import { apiKey } from "better-auth/plugins";
 
 if (!privateEnv.GOOGLE_CLIENT_ID) throw new Error('GOOGLE_CLIENT_ID is not set');
@@ -60,7 +60,7 @@ export const auth = betterAuth({
                         } else {
                             const blob = await response.blob();
                             const arrayBuffer = await blob.arrayBuffer();
-                            s3ImageKey = await uploadProfilePicture(
+                            s3ImageKey = await uploadProfilePictureRaw(
                                 profile.sub,
                                 new Uint8Array(arrayBuffer),
                                 blob.type || 'image/jpeg'

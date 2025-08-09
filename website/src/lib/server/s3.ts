@@ -132,6 +132,47 @@ export async function uploadProfilePicture(
     return uploadedPath;
 }
 
+// Uploads an avatar image to storage WITHOUT touching the database.
+// Useful during OAuth account creation where the database row does not exist yet.
+export async function uploadProfilePictureRaw(
+    identifier: string,
+    body: Uint8Array,
+    contentType: string,
+): Promise<string> {
+    if (!contentType || !contentType.startsWith('image/')) {
+        throw new Error('Invalid file type. Only images are allowed.');
+    }
+
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+    if (!allowedTypes.includes(contentType.toLowerCase())) {
+        throw new Error('Unsupported image format. Only JPEG, PNG, GIF, and WebP are allowed.');
+    }
+
+    const processedImage = await processImage(Buffer.from(body));
+    const key = `avatars/${identifier}.webp`;
+
+    let uploadedPath: string | null = null
+    try {
+        const data = await withRetry(async () => {
+            const { data, error } = await supabase
+                .storage
+                .from(BUCKET_NAME)
+                .upload(key, processedImage.buffer, {
+                    contentType: processedImage.contentType,
+                    upsert: true
+                })
+            if (error) throw error
+            return data
+        }, 3, 700)
+        uploadedPath = data.path
+    } catch (primaryError) {
+        console.warn('Primary Supabase upload failed, trying HTTP fallback (raw)...', primaryError)
+        uploadedPath = await uploadViaHttpFallback(key, processedImage.buffer, processedImage.contentType)
+    }
+
+    return uploadedPath
+}
+
 export async function uploadCoinIcon(
     coinSymbol: string,
     body: Uint8Array,
