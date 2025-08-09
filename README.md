@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <img style="width: 128px; height: 128px" src="website/static/favicon.svg" /><h1 style="font-size: 48px"><a href="https://rugplay.com">Rugplay.com</a> - the fake crypto simulator.</h1>
 
 [Privacy Policy](https://rugplay.com/legal/privacy) | [Terms of Service](https://rugplay.com/legal/terms) | [License](LICENSE) | [YouTube video](https://www.youtube.com/watch?v=nRUkvPMphRc)
@@ -190,3 +191,6 @@ Before you begin, make sure you have the following installed:
 ## License
 
 This project is licensed under the **Creative Commons Attribution-NonCommercial 4.0 International** License (**CC BY-NC 4.0**). See the [LICENSE](LICENSE) file for details.
+=======
+# Cryptonix
+>>>>>>> 253c31ec036b386fc198636f05023b96a98e5b4c
