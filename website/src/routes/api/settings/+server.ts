@@ -1,6 +1,6 @@
 import { auth } from '$lib/auth';
 import { clearUserCache } from '$lib/../hooks.server';
-import { uploadProfilePicture } from '$lib/server/s3';
+import { uploadProfilePicture, uploadBannerImage } from '$lib/server/s3';
 import { error, json } from '@sveltejs/kit';
 import { db } from '$lib/server/db';
 import { user } from '$lib/server/db/schema';
@@ -8,7 +8,7 @@ import { eq } from 'drizzle-orm';
 import { MAX_FILE_SIZE } from '$lib/data/constants';
 import { isNameAppropriate } from '$lib/server/moderation';
 
-async function validateInputs(name: string, bio: string, username: string, avatarFile: File | null) {
+async function validateInputs(name: string, bio: string, username: string, avatarFile: File | null, portfolioTheme?: string, bannerFile?: File | null) {
     if (!name || !name.trim()) {
         throw error(400, 'Display name is required');
     }
@@ -57,6 +57,12 @@ async function validateInputs(name: string, bio: string, username: string, avata
     if (avatarFile && avatarFile.size > MAX_FILE_SIZE) {
         throw error(400, 'Avatar file must be smaller than 1MB');
     }
+    if (portfolioTheme && !/^([a-z0-9_-]{1,20})$/i.test(portfolioTheme)) {
+        throw error(400, 'Invalid theme value');
+    }
+    if (bannerFile && bannerFile.size > MAX_FILE_SIZE * 5) {
+        throw error(400, 'Banner image must be smaller than 5MB');
+    }
 }
 
 export async function POST({ request }) {
@@ -74,10 +80,13 @@ export async function POST({ request }) {
     const bio = formData.get('bio') as string;
     const username = (formData.get('username') as string)?.toLowerCase().trim();
     const avatarFile = formData.get('avatar') as File | null;
+    const bannerFile = formData.get('banner') as File | null;
+    const removeBanner = formData.get('removeBanner') as string | null;
+    const portfolioTheme = (formData.get('portfolioTheme') as string) || undefined;
 
     name = name?.trim().replace(/\s+/g, ' ');
 
-    await validateInputs(name, bio, username, avatarFile);
+    await validateInputs(name, bio, username, avatarFile, portfolioTheme, bannerFile);
 
     const updates: Record<string, any> = {
         name,
@@ -85,6 +94,7 @@ export async function POST({ request }) {
         username,
         updatedAt: new Date()
     };
+    if (portfolioTheme) updates.portfolioTheme = portfolioTheme;
 
     if (avatarFile && avatarFile.size > 0) {
         try {
@@ -97,6 +107,22 @@ export async function POST({ request }) {
             updates.image = key;
         } catch (e) {
             console.error('Avatar upload failed, continuing without update:', e);
+        }
+    }
+
+    if (removeBanner === '1') {
+        updates.bannerImage = null;
+    } else if (bannerFile && bannerFile.size > 0) {
+        try {
+            const arrayBuffer = await bannerFile.arrayBuffer();
+            const key = await uploadBannerImage(
+                session.user.id,
+                new Uint8Array(arrayBuffer),
+                bannerFile.type
+            );
+            updates.bannerImage = key;
+        } catch (e) {
+            console.error('Banner upload failed, continuing without update:', e);
         }
     }
 

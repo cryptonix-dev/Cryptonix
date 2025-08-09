@@ -18,6 +18,8 @@ export type User = {
     volumeMuted: boolean;
 
     prestigeLevel: number;
+    portfolioTheme?: string;
+    bannerImage?: string | null;
 } | null;
 
 export const USER_DATA = writable<User>(undefined);

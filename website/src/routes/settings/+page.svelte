@@ -22,20 +22,28 @@
 	let name = $state($USER_DATA?.name || '');
 	let bio = $state($USER_DATA?.bio ?? '');
 	let username = $state($USER_DATA?.username || '');
+  let portfolioTheme = $state($USER_DATA?.portfolioTheme || 'default');
 
 	const initialUsername = $USER_DATA?.username || '';
 	let avatarFile: FileList | undefined = $state(undefined);
+  let bannerFile: FileList | undefined = $state(undefined);
 
-	let previewUrl: string | null = $state(null);
+  let previewUrl: string | null = $state(null);
+  let bannerPreviewUrl: string | null = $state(null);
+  let bannerRemoved = $state(false);
+  let bannerInput: HTMLInputElement | undefined = $state(undefined);
 	let currentAvatarUrl = $derived(previewUrl || getPublicUrl($USER_DATA?.image ?? null));
 
 	let nameError = $state('');
 
-	let isDirty = $derived(
+  let isDirty = $derived(
 		name !== ($USER_DATA?.name || '') ||
 			bio !== ($USER_DATA?.bio ?? '') ||
 			username !== ($USER_DATA?.username || '') ||
-			avatarFile !== undefined
+          portfolioTheme !== ($USER_DATA?.portfolioTheme || 'default') ||
+          avatarFile !== undefined ||
+          bannerFile !== undefined ||
+          bannerRemoved
 	);
 
 	let fileInput: HTMLInputElement | undefined = $state(undefined);
@@ -70,7 +78,7 @@
 	function handleAvatarClick() {
 		fileInput?.click();
 	}
-	function handleAvatarChange(e: Event) {
+  function handleAvatarChange(e: Event) {
 		const f = (e.target as HTMLInputElement).files?.[0];
 		if (f) {
 			// Check file size
@@ -78,20 +86,53 @@
 				toast.error('Profile picture must be smaller than 1MB');
 				(e.target as HTMLInputElement).value = '';
 				return;
-			}
+      }
 
 			// Check file type
 			if (!f.type.startsWith('image/')) {
 				toast.error('Please select a valid image file');
 				(e.target as HTMLInputElement).value = '';
 				return;
-			}
+      }
 
-			previewUrl = URL.createObjectURL(f);
+      previewUrl = URL.createObjectURL(f);
 			const files = (e.target as HTMLInputElement).files;
 			if (files) avatarFile = files;
 		}
 	}
+
+  function handleBannerChange(e: Event) {
+    const f = (e.target as HTMLInputElement).files?.[0];
+    if (f && !f.type.startsWith('image/')) {
+      toast.error('Please select a valid image file');
+      (e.target as HTMLInputElement).value = '';
+      return;
+    }
+    const files = (e.target as HTMLInputElement).files;
+    if (files) {
+      bannerFile = files;
+      bannerPreviewUrl = URL.createObjectURL(files[0]);
+      bannerRemoved = false;
+    }
+  }
+
+  function handleBannerClick() {
+    bannerInput?.click();
+  }
+
+  function removeBanner() {
+    if (!$USER_DATA?.bannerImage && !bannerPreviewUrl) return;
+    if (!confirm('Remove your profile banner?')) return;
+    if (bannerInput) bannerInput.value = '';
+    bannerFile = undefined;
+    bannerPreviewUrl = null;
+    bannerRemoved = true;
+  }
+
+  function undoRemoveBanner() {
+    bannerRemoved = false;
+    // leave preview null so existing stored banner (if any) remains visible in the tile
+  }
 
 	const checkUsername = debounce(async (val: string) => {
 		if (val.length < 3) return (usernameAvailable = null);
@@ -126,11 +167,17 @@
 		loading = true;
 
 		try {
-			const fd = new FormData();
+            const fd = new FormData();
 			fd.append('name', name.trim());
 			fd.append('bio', bio);
 			fd.append('username', username);
-			if (avatarFile?.[0]) fd.append('avatar', avatarFile[0]);
+            if (avatarFile?.[0]) fd.append('avatar', avatarFile[0]);
+            if (bannerFile?.[0]) {
+              fd.append('banner', bannerFile[0]);
+            } else if (bannerRemoved) {
+              fd.append('removeBanner', '1');
+            }
+            fd.append('portfolioTheme', portfolioTheme);
 
 			const res = await fetch('/api/settings', { method: 'POST', body: fd });
 
@@ -343,6 +390,44 @@
 					onchange={handleAvatarChange}
 				/>
 
+                <div class="mt-4 space-y-2">
+                  <Label>Profile Banner</Label>
+                  <div
+                    class="group relative cursor-pointer overflow-hidden rounded-lg border"
+                    role="button"
+                    tabindex="0"
+                    onclick={handleBannerClick}
+                    onkeydown={(e) => e.key === 'Enter' && handleBannerClick()}
+                  >
+                    <div
+                      class="h-28 w-full bg-muted"
+                      style={`background-image:url(${bannerPreviewUrl || getPublicUrl($USER_DATA?.bannerImage ?? null) || ''}); background-size:cover; background-position:center;`}
+                    ></div>
+                    <div class="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 transition-opacity group-hover:opacity-100">
+                      <span class="text-white text-xs">Change</span>
+                    </div>
+                    {#if ($USER_DATA?.bannerImage || bannerPreviewUrl) && !bannerRemoved}
+                      <button
+                        type="button"
+                        aria-label="Remove banner"
+                        class="absolute right-2 top-2 rounded-md bg-black/60 p-1 text-white shadow hover:bg-black/75"
+                        onclick={(e) => { e.stopPropagation(); removeBanner(); }}
+                      >
+                        <Trash2Icon class="h-4 w-4" />
+                      </button>
+                    {/if}
+                  </div>
+                  <input class="hidden" type="file" accept="image/*" bind:this={bannerInput} onchange={handleBannerChange} />
+
+                  <div class="flex items-center gap-3">
+                    {#if bannerRemoved}
+                      <span class="text-xs text-destructive">Pending removal</span>
+                      <Button type="button" variant="ghost" size="sm" onclick={undoRemoveBanner}>Undo</Button>
+                    {/if}
+                    <span class="ml-auto text-xs text-muted-foreground">Recommended: 1500×300 (5:1) • Max 5MB</span>
+                  </div>
+                </div>
+
 				<form onsubmit={handleSubmit} class="space-y-4">
 					<div class="space-y-2">
 						<Label for="name">Display Name</Label>
@@ -391,6 +476,19 @@
 						<Label for="bio">Bio</Label>
 						<Textarea id="bio" bind:value={bio} rows={4} placeholder="Tell us about yourself" />
 					</div>
+
+          <div class="space-y-2">
+            <Label for="theme">Portfolio Theme</Label>
+            <select id="theme" class="border rounded px-2 py-1 bg-background" bind:value={portfolioTheme}>
+              <option value="default">Default</option>
+              <option value="emerald">Emerald</option>
+              <option value="rose">Rose</option>
+              <option value="violet">Violet</option>
+              <option value="amber">Amber</option>
+              <option value="slate">Slate</option>
+            </select>
+            <p class="text-muted-foreground text-xs">This theme appears on your public portfolio page.</p>
+          </div>
 
 					<Button type="submit" disabled={loading || !isDirty || !!nameError}>
 						{loading ? 'Saving…' : 'Save Changes'}

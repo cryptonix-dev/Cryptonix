@@ -34,7 +34,7 @@ export function getPublicUrl(key: string | null): string | null {
     const BUCKET_NAME = 'bucket';
     const baseUrl = `${PUBLIC_SUPABASE_URL}/storage/v1/object/public/${BUCKET_NAME}/${key}`;
     // Bust cache for avatar updates that reuse the same key
-    if (key.startsWith('avatars/')) return `${baseUrl}?v=${Date.now()}`;
+    if (key.startsWith('avatars/') || key.startsWith('banners/')) return `${baseUrl}?v=${Date.now()}`;
     return baseUrl;
 }
 

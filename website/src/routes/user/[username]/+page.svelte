@@ -30,6 +30,8 @@
 	let loading = $state(false);
 
 	let previousUsername = $state<string | null>(null);
+ let portfolioTheme = $derived(profileData?.profile?.portfolioTheme || 'default');
+ let bannerImage = $derived(profileData?.profile?.bannerImage || null);
 
 	let isOwnProfile = $derived(
 		$USER_DATA && profileData?.profile && $USER_DATA.username === profileData.profile.username
@@ -360,7 +362,7 @@
 	twitterCard="summary"
 />
 
-<div class="container mx-auto max-w-6xl p-6">
+ <div class={`container mx-auto max-w-6xl p-6 theme-${portfolioTheme}`}>
 	{#if loading}
 		<ProfileSkeleton />
 	{:else if !profileData}
@@ -372,8 +374,14 @@
 		</div>
 	{:else}
 		<!-- Profile Header Card -->
-		<Card.Root class="mb-6 py-0">
-			<Card.Content class="p-6">
+        <Card.Root
+            class="mb-6 py-0 overflow-hidden relative"
+            style={bannerImage ? `background-image:url(${getPublicUrl(bannerImage)}); background-size:cover; background-position:center;` : ''}
+        >
+            {#if bannerImage}
+                <div class="absolute inset-0 bg-black/40"></div>
+            {/if}
+            <Card.Content class={`p-6 relative ${bannerImage ? 'text-foreground' : ''}`}>
 				<div class="flex flex-col gap-4 sm:flex-row sm:items-start">
 					<!-- Avatar -->
 					<div class="flex-shrink-0">

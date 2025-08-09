@@ -21,6 +21,8 @@ export async function GET({ params }) {
                 username: true,
                 bio: true,
                 image: true,
+                bannerImage: true,
+                portfolioTheme: true,
                 createdAt: true,
                 baseCurrencyBalance: true,
                 isAdmin: true,

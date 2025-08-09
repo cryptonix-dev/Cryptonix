@@ -126,6 +126,8 @@ export const handle: Handle = async ({ event, resolve }) => {
                     email: user.email,
                     isAdmin: user.isAdmin,
                     image: user.image,
+                    bannerImage: user.bannerImage,
+                    portfolioTheme: user.portfolioTheme,
                     isBanned: user.isBanned,
                     banReason: user.banReason,
                     baseCurrencyBalance: user.baseCurrencyBalance,
@@ -164,7 +166,9 @@ export const handle: Handle = async ({ event, resolve }) => {
                     baseCurrencyBalance: parseFloat(userRecord.baseCurrencyBalance || '0'),
                     bio: userRecord.bio || '',
                     volumeMaster: parseFloat(userRecord.volumeMaster || '0.7'),
-                    volumeMuted: userRecord.volumeMuted || false
+                    volumeMuted: userRecord.volumeMuted || false,
+                    portfolioTheme: userRecord.portfolioTheme || 'default',
+                    bannerImage: userRecord.bannerImage || null
                 };
 
                 const cacheTTL = userRecord.isAdmin ? CACHE_TTL * 2 : CACHE_TTL;

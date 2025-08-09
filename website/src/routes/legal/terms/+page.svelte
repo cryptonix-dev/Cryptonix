@@ -61,7 +61,7 @@
 				<h2 class="mb-4 text-2xl font-semibold">2. Platform Description</h2>
 				<div class="space-y-4">
 					<p>
-						Rugplay is a <strong>simulated cryptocurrency trading platform</strong> designed for educational
+						Cryptonix is a <strong>simulated cryptocurrency trading platform</strong> designed for educational
 						and entertainment purposes. The Platform allows users to:
 					</p>
 					<ul class="ml-6 list-disc space-y-2">
@@ -77,7 +77,7 @@
 						<AlertTriangle class="h-4 w-4" />
 						<Alert.Title>No Real Financial Value</Alert.Title>
 						<Alert.Description>
-							All currency on Rugplay (*BUSS, "$", and created coins) is virtual and has no
+							All currency on Cryptonix (*BUSS, "$", and created coins) is virtual and has no
 							real-world monetary value. No real cryptocurrency or money is involved in any
 							transactions.
 						</Alert.Description>

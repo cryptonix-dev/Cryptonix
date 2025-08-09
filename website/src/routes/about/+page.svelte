@@ -22,18 +22,18 @@
 <UserManualModal bind:open={showUserManual} />
 
 <svelte:head>
-	<title>About - Rugplay</title>
+	<title>About - Cryptonix</title>
 	<meta
 		name="description"
-		content="Learn about Rugplay - a realistic cryptocurrency trading simulation focusing on DeFi risks and mechanics."
+		content="Learn about Cryptonix - a realistic cryptocurrency trading simulation focusing on DeFi risks and mechanics."
 	/>
 </svelte:head>
 
 <div class="container mx-auto space-y-8 px-4 py-8">
 	<div class="space-y-4 text-center">
         <div class="mb-4 flex items-center justify-center gap-2">
-            <img src="/facedev/bliptext.png" class="h-12 w-12" alt="Rugplay" />
-			<h1 class="text-4xl font-bold">Rugplay</h1>
+            <img src="/facedev/Cryptonix.png" class="h-12 w-12" alt="Cryptonix" />
+			<h1 class="text-4xl font-bold">Cryptonix</h1>
 		</div>
 		<p class="text-muted-foreground mx-auto max-w-2xl text-lg">
 			A crypto trading simulator where you can practice trading without losing real money. Create
@@ -52,7 +52,7 @@
 			<CardHeader>
 				<CardTitle class="flex items-center gap-2">
 					<Coins class="text-primary h-5 w-5" />
-					About Rugplay
+					About Cryptonix
 				</CardTitle>
 			</CardHeader>
 			<CardContent>

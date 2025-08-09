@@ -5,6 +5,10 @@ export const transactionTypeEnum = pgEnum('transaction_type', ['BUY', 'SELL', 'T
 export const predictionMarketEnum = pgEnum('prediction_market_status', ['ACTIVE', 'RESOLVED', 'CANCELLED']);
 export const notificationTypeEnum = pgEnum('notification_type', ['HOPIUM', 'SYSTEM', 'TRANSFER', 'RUG_PULL']);
 
+// Ticket System Enums
+export const ticketStatusEnum = pgEnum('ticket_status', ['OPEN', 'PENDING', 'SOLVED', 'CLOSED']);
+export const ticketPriorityEnum = pgEnum('ticket_priority', ['LOW', 'MEDIUM', 'HIGH']);
+
 export const user = pgTable("user", {
 	id: serial("id").primaryKey(),
 	name: text("name").notNull(),
@@ -33,6 +37,8 @@ export const user = pgTable("user", {
 	}).notNull().default("0.00000000"),
 	loginStreak: integer("login_streak").notNull().default(0),
 	prestigeLevel: integer("prestige_level").default(0),
+    portfolioTheme: varchar('portfolio_theme', { length: 20 }).default('default'),
+    bannerImage: text('banner_image'),
 }, (table) => {
 	return {
 		usernameIdx: index("user_username_idx").on(table.username),
@@ -304,3 +310,35 @@ export const apikey = pgTable("apikey", {
 }, (table) => ({
 	userIdx: index("idx_apikey_user").on(table.userId)
 }));
+
+// Support Ticketing
+export const supportTicket = pgTable('support_ticket', {
+    id: serial('id').primaryKey(),
+    userId: integer('user_id').notNull().references(() => user.id, { onDelete: 'cascade' }),
+    subject: varchar('subject', { length: 200 }).notNull(),
+    status: ticketStatusEnum('status').notNull().default('OPEN'),
+    priority: ticketPriorityEnum('priority').notNull().default('LOW'),
+    lastActivityAt: timestamp('last_activity_at', { withTimezone: true }).notNull().defaultNow(),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+}, (table) => {
+    return {
+        userIdx: index('idx_ticket_user').on(table.userId),
+        statusIdx: index('idx_ticket_status').on(table.status),
+        updatedIdx: index('idx_ticket_updated').on(table.updatedAt),
+    };
+});
+
+export const supportTicketMessage = pgTable('support_ticket_message', {
+    id: serial('id').primaryKey(),
+    ticketId: integer('ticket_id').notNull().references(() => supportTicket.id, { onDelete: 'cascade' }),
+    authorUserId: integer('author_user_id').references(() => user.id, { onDelete: 'set null' }),
+    message: text('message').notNull(),
+    isStaffReply: boolean('is_staff_reply').notNull().default(false),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+}, (table) => {
+    return {
+        ticketIdx: index('idx_ticket_message_ticket').on(table.ticketId),
+        createdIdx: index('idx_ticket_message_created').on(table.createdAt),
+    };
+});

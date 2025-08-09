@@ -504,10 +504,14 @@
 									<Scale />
 									Terms of Service
 								</DropdownMenu.Item>
-								<DropdownMenu.Item onclick={handlePrivacyClick}>
+                                    <DropdownMenu.Item onclick={handlePrivacyClick}>
 									<ShieldCheck />
 									Privacy Policy
 								</DropdownMenu.Item>
+                                    <DropdownMenu.Item onclick={() => (window.location.href = '/tickets')}>
+                                        <Ticket />
+                                        Support Tickets
+                                    </DropdownMenu.Item>
 							</DropdownMenu.Group>
 
 							<DropdownMenu.Separator />

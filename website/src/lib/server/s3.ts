@@ -205,3 +205,44 @@ export async function uploadCoinIcon(
     }
     return data.path;
 }
+
+// Upload user profile banner image under banners/{userId}.webp and return storage key
+export async function uploadBannerImage(
+    userId: string,
+    body: Uint8Array,
+    contentType: string,
+): Promise<string> {
+    if (!contentType || !contentType.startsWith('image/')) {
+        throw new Error('Invalid file type. Only images are allowed.');
+    }
+
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+    if (!allowedTypes.includes(contentType.toLowerCase())) {
+        throw new Error('Unsupported image format. Only JPEG, PNG, GIF, and WebP are allowed.');
+    }
+
+    const processedImage = await processImage(Buffer.from(body));
+    const key = `banners/${userId}.webp`;
+
+    let uploadedPath: string | null = null
+    try {
+        const data = await withRetry(async () => {
+            const { data, error } = await supabase
+                .storage
+                .from(BUCKET_NAME)
+                .upload(key, processedImage.buffer, {
+                    contentType: processedImage.contentType,
+                    upsert: true
+                })
+            if (error) throw error
+            return data
+        }, 3, 700)
+        uploadedPath = data.path
+    } catch (primaryError) {
+        console.warn('Primary Supabase upload failed (banner), trying HTTP fallback...', primaryError)
+        uploadedPath = await uploadViaHttpFallback(key, processedImage.buffer, processedImage.contentType)
+    }
+
+    await db.update(user).set({ bannerImage: uploadedPath }).where(eq(user.id, parseInt(userId)));
+    return uploadedPath;
+}
