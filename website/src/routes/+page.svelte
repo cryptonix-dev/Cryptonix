@@ -75,7 +75,7 @@
 </script>
 
 <SEO
-	title="Rugplay"
+	title="Cryptonix"
 	description="A realistic crypto trading simulator that lets you experience the risks and mechanics of decentralized exchanges without real financial consequences. Create coins, trade with liquidity pools, and learn about 'rug pulls' in a... relatively safe environment :)"
 	keywords="crypto simulation game, trading practice game, rug pull simulation, virtual cryptocurrency game"
 />
@@ -85,7 +85,7 @@
 <div class="container mx-auto p-6">
 	<header class="mb-8">
 		<h1 class="mb-2 truncate text-3xl font-bold">
-			{$USER_DATA ? getTimeBasedGreeting($USER_DATA?.name) : 'Welcome to Rugplay!'}
+			{$USER_DATA ? getTimeBasedGreeting($USER_DATA?.name) : 'Welcome to Cryptonix!'}
 		</h1>
 		<p class="text-muted-foreground">
 			{#if $USER_DATA}

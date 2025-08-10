@@ -31,14 +31,14 @@
 </script>
 
 <SEO 
-	title="Live Trades - Rugplay"
-	description="Watch real-time virtual cryptocurrency trading activity in the Rugplay simulation game. See live trades, user activity, and market movements as they happen."
+	title="Live Trades - Cryptonix"
+	description="Watch real-time virtual cryptocurrency trading activity in the Cryptonix simulation game. See live trades, user activity, and market movements as they happen."
 	keywords="live crypto trades game, real-time trading simulation, virtual trading activity, crypto game stream"
 />
 
 <svelte:head>
-	<title>Live Trades - Rugplay</title>
-	<meta name="description" content="Real-time cryptocurrency trading activity on Rugplay" />
+	<title>Live Trades - Cryptonix</title>
+	<meta name="description" content="Real-time cryptocurrency trading activity on Cryptonix" />
 </svelte:head>
 
 <div class="container mx-auto max-w-7xl p-6">

@@ -198,11 +198,11 @@
 
 <SEO
 	title={question
-		? `${question.question} - Hopium - Rugplay`
-		: 'Loading Question - Hopium - Rugplay'}
+		? `${question.question} - Hopium - Cryptonix`
+		: 'Loading Question - Hopium - Cryptonix'}
 	description={question
-		? `Bet on "${question.question}" in Rugplay's AI-powered prediction market. Current odds: ${question.yesPercentage.toFixed(1)}% YES, ${question.noPercentage.toFixed(1)}% NO. Total volume: $${question.totalAmount.toFixed(2)}.`
-		: 'AI-powered prediction market question in the Rugplay simulation game.'}
+		? `Bet on "${question.question}" in Cryptonix's AI-powered prediction market. Current odds: ${question.yesPercentage.toFixed(1)}% YES, ${question.noPercentage.toFixed(1)}% NO. Total volume: $${question.totalAmount.toFixed(2)}.`
+		: 'AI-powered prediction market question in the Cryptonix simulation game.'}
 	keywords="AI prediction market question, virtual betting, cryptocurrency prediction game, yes no betting, forecasting simulation"
 />
 

@@ -40,8 +40,8 @@
 </script>
 
 <SEO 
-	title="Gambling - Rugplay"
-	description="Play virtual gambling games with simulated currency in Rugplay. Try coinflip, slots, and mines games using virtual money with no real-world value - purely for entertainment."
+	title="Gambling - Cryptonix"
+	description="Play virtual gambling games with simulated currency in Cryptonix. Try coinflip, slots, and mines games using virtual money with no real-world value - purely for entertainment."
 	keywords="virtual gambling simulation, coinflip game, slots game, mines game, virtual casino, simulated gambling, entertainment games"
 />
 

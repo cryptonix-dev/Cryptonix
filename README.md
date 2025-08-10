@@ -1,6 +1,6 @@
-<img style="width: 128px; height: 128px" src="website/static/favicon.svg" /><h1 style="font-size: 48px"><a href="https://rugplay.com">Rugplay.com</a> - the fake crypto simulator.</h1>
+<img style="width: 128px; height: 128px" src="website/static/favicon.svg" /><h1 style="font-size: 48px"><a href="https://Cryptonix.com">Cryptonix.com</a> - the fake crypto simulator.</h1>
 
-[Privacy Policy](https://rugplay.com/legal/privacy) | [Terms of Service](https://rugplay.com/legal/terms) | [License](LICENSE) | [YouTube video](https://www.youtube.com/watch?v=nRUkvPMphRc)
+[Privacy Policy](https://Cryptonix.com/legal/privacy) | [Terms of Service](https://Cryptonix.com/legal/terms) | [License](LICENSE) | [YouTube video](https://www.youtube.com/watch?v=nRUkvPMphRc)
 
 ## About
 
@@ -33,15 +33,15 @@ Before you begin, make sure you have the following installed:
 1. **Clone the repository**
 
    ```bash
-   git clone https://github.com/outpoot/rugplay.git
-   cd rugplay
+   git clone https://github.com/outpoot/Cryptonix.git
+   cd Cryptonix
    ```
 
 2. **Set up Redis**
 
    Create a Redis Docker container:
    ```bash
-   docker run -d --name rugplay-redis -p 6379:6379 -v rugplay_redisdata:/data --restart unless-stopped redis:8-alpine redis-server --save 60 1
+   docker run -d --name Cryptonix-redis -p 6379:6379 -v Cryptonix_redisdata:/data --restart unless-stopped redis:8-alpine redis-server --save 60 1
    ```
 
    **Alternative:** You can also [download and install Redis directly](https://redis.io/downloads/) for your operating system, or use a managed Redis service such as Redis Cloud.
@@ -52,7 +52,7 @@ Before you begin, make sure you have the following installed:
 
    - **Run Postgres locally with Docker:**
      ```bash
-     docker run -d --name rugplay-postgres -e POSTGRES_USER=pguser -e POSTGRES_PASSWORD=pgpass -e POSTGRES_DB=rugplay -p 5432:5432 -v rugplay_pgdata:/var/lib/postgresql/data --restart unless-stopped pgvector/pgvector:pg16
+     docker run -d --name Cryptonix-postgres -e POSTGRES_USER=pguser -e POSTGRES_PASSWORD=pgpass -e POSTGRES_DB=Cryptonix -p 5432:5432 -v Cryptonix_pgdata:/var/lib/postgresql/data --restart unless-stopped pgvector/pgvector:pg16
      ```
 
    - **Use a managed cloud Postgres provider:**
@@ -62,7 +62,7 @@ Before you begin, make sure you have the following installed:
 
    If you are running Postgres locally, you can seed the database with:
    ```bash
-   docker exec -it rugplay-postgres psql -d rugplay -U pguser
+   docker exec -it Cryptonix-postgres psql -d Cryptonix -U pguser
    ```
    Then, copy and paste the SQL from the migration files (e.g. `website/drizzle/0000_crazy_bloodstrike.sql`).
 
@@ -89,10 +89,10 @@ Before you begin, make sure you have the following installed:
 
    ```ini
    # --- Database ---
-   DATABASE_URL=postgres://pguser:pgpass@localhost:5432/rugplay   # PostgreSQL connection string
+   DATABASE_URL=postgres://pguser:pgpass@localhost:5432/Cryptonix   # PostgreSQL connection string
    POSTGRES_USER=pguser      # PostgreSQL username (should match Docker config)
    POSTGRES_PASSWORD=pgpass  # PostgreSQL password (should match Docker config)
-   POSTGRES_DB=rugplay       # PostgreSQL database name (should match Docker config)
+   POSTGRES_DB=Cryptonix       # PostgreSQL database name (should match Docker config)
 
    # --- Redis ---
    REDIS_URL=redis://localhost:6379  # Redis connection string

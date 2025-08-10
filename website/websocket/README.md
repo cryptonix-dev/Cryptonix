@@ -1,6 +1,6 @@
 # Websocket Server
 
-This is the websocket server component of Rugplay, built with [Bun](https://bun.sh) - a fast all-in-one JavaScript runtime.
+This is the websocket server component of Cryptonix, built with [Bun](https://bun.sh) - a fast all-in-one JavaScript runtime.
 
 ## Prerequisites
 

@@ -217,7 +217,7 @@
 						</p>
 						<div class="space-y-2">
 							<h4 class="font-medium">Endpoint</h4>
-							<Codeblock text="GET https://rugplay.com/api/v1/top" displayOnly={true} />
+							<Codeblock text="GET https://Cryptonix.com/api/v1/top" displayOnly={true} />
 						</div>
 						<div class="space-y-2">
 							<h4 class="font-medium">Example Response</h4>
@@ -260,7 +260,7 @@
 						</p>
 						<div class="space-y-2">
 							<h4 class="font-medium">Endpoint</h4>
-							<Codeblock text="GET https://rugplay.com/api/v1/market" displayOnly={true} />
+							<Codeblock text="GET https://Cryptonix.com/api/v1/market" displayOnly={true} />
 						</div>
 						<div class="space-y-2">
 							<h4 class="font-medium">Query Parameters</h4>
@@ -323,7 +323,7 @@
 						</p>
 						<div class="space-y-2">
 							<h4 class="font-medium">Endpoint</h4>
-							<Codeblock text="GET https://rugplay.com/api/v1/coin/&lbrace;symbol&rbrace;" displayOnly={true} />
+							<Codeblock text="GET https://Cryptonix.com/api/v1/coin/&lbrace;symbol&rbrace;" displayOnly={true} />
 						</div>
 						<div class="space-y-2">
 							<h4 class="font-medium">Parameters</h4>
@@ -401,7 +401,7 @@
 						</p>
 						<div class="space-y-2">
 							<h4 class="font-medium">Endpoint</h4>
-							<Codeblock text="GET https://rugplay.com/api/v1/holders/&lbrace;symbol&rbrace;" displayOnly={true} />
+							<Codeblock text="GET https://Cryptonix.com/api/v1/holders/&lbrace;symbol&rbrace;" displayOnly={true} />
 						</div>
 						<div class="space-y-2">
 							<h4 class="font-medium">Parameters</h4>
@@ -462,7 +462,7 @@
 						</p>
 						<div class="space-y-2">
 							<h4 class="font-medium">Endpoint</h4>
-							<Codeblock text="GET https://rugplay.com/api/v1/hopium" displayOnly={true} />
+							<Codeblock text="GET https://Cryptonix.com/api/v1/hopium" displayOnly={true} />
 						</div>
 						<div class="space-y-2">
 							<h4 class="font-medium">Query Parameters</h4>
@@ -481,7 +481,7 @@
   "questions": [
     {
       "id": 101,
-      "question": "will elon musk tweet about rugplay?",
+      "question": "will elon musk tweet about Cryptonix?",
       "status": "ACTIVE",
       "resolutionDate": "2025-07-25T10:39:19.612Z",
       "totalAmount": 4007.76,
@@ -532,7 +532,7 @@
 						</p>
 						<div class="space-y-2">
 							<h4 class="font-medium">Endpoint</h4>
-							<Codeblock text="GET https://rugplay.com/api/v1/hopium/&lbrace;question_id&rbrace;" displayOnly={true} />
+							<Codeblock text="GET https://Cryptonix.com/api/v1/hopium/&lbrace;question_id&rbrace;" displayOnly={true} />
 						</div>
 						<div class="space-y-2">
 							<h4 class="font-medium">Parameters</h4>
@@ -548,7 +548,7 @@
 								text={`{
   "question": {
     "id": 101,
-    "question": "will elon musk tweet about rugplay?",
+    "question": "will elon musk tweet about Cryptonix?",
     "status": "ACTIVE",
     "resolutionDate": "2025-07-25T10:39:19.612Z",
     "totalAmount": 4007.76,

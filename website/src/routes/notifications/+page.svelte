@@ -89,8 +89,8 @@
 </script>
 
 <SEO
-	title="Notifications - Rugplay"
-	description="View your notifications and updates from Rugplay."
+	title="Notifications - Cryptonix"
+	description="View your notifications and updates from Cryptonix."
 />
 
 <div class="container mx-auto max-w-4xl p-6">

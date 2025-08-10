@@ -117,8 +117,8 @@
 </script>
 
 <SEO
-	title="Prestige - Rugplay"
-	description="Advance your trading status and reset your progress for prestige rewards in the Rugplay cryptocurrency simulation."
+	title="Prestige - Cryptonix"
+	description="Advance your trading status and reset your progress for prestige rewards in the Cryptonix cryptocurrency simulation."
 	noindex={true}
 />
 

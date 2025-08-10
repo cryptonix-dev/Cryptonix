@@ -56,7 +56,7 @@
 			'color: #4962ee; font-family: monospace; font-size: 12px; font-weight: bold; text-shadow: 2px 2px rgba(0,0,0,0.2);'
 		);
 		console.log(
-			'%c Welcome to Rugplay! DO NOT FUCKING PASTE ANYTHING IN THE CONSOLE UNLESS YOU KNOW WHAT YOU ARE DOING.',
+			'%c Welcome to Cryptonix! DO NOT FUCKING PASTE ANYTHING IN THE CONSOLE UNLESS YOU KNOW WHAT YOU ARE DOING.',
 			'color: #4962ee; font-family: monospace; font-size: 12px; font-weight: bold; text-shadow: 2px 2px rgba(0,0,0,0.2);'
 		);
 		console.log(
@@ -77,7 +77,7 @@
 	});
 
 	function getPageTitle(routeId: string | null): string {
-		if (!routeId) return 'Rugplay';
+		if (!routeId) return 'Cryptonix';
 
 		const titleMap: Record<string, string> = {
 			'/': 'Home',
@@ -109,7 +109,7 @@
 			return 'Prediction Question';
 		}
 
-		return titleMap[routeId] || 'Rugplay';
+		return titleMap[routeId] || 'Cryptonix';
 	}
 </script>
 

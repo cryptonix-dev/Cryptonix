@@ -1,7 +1,7 @@
 import { db } from '$lib/server/db';
 import { predictionQuestion, predictionBet, user, accountDeletionRequest, session, account, promoCodeRedemption, userPortfolio, commentLike, comment, transaction, coin } from '$lib/server/db/schema';
 import { eq, and, lte, isNull } from 'drizzle-orm';
-import { resolveQuestion, getRugplayData } from '$lib/server/ai';
+import { resolveQuestion, getCryptonixData } from '$lib/server/ai';
 import { createNotification } from '$lib/server/notification';
 import { formatValue } from '$lib/utils';
 
@@ -30,11 +30,11 @@ export async function resolveExpiredQuestions() {
             try {
                 console.log(`Resolving question: ${question.question}`);
 
-                const rugplayData = await getRugplayData();
+                const CryptonixData = await getCryptonixData();
                 const resolution = await resolveQuestion(
                     question.question,
                     question.requiresWebSearch,
-                    rugplayData
+                    CryptonixData
                 );
 
                 if (resolution.confidence < 50) {

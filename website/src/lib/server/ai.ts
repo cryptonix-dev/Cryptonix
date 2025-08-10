@@ -245,11 +245,11 @@ export async function validateQuestion(question: string, description?: string): 
     }
 
     const prompt = `
-You are evaluating whether a prediction market question is valid and answerable for Rugplay, a cryptocurrency trading simulation platform.
+You are evaluating whether a prediction market question is valid and answerable for Cryptonix, a cryptocurrency trading simulation platform.
 
 Question: "${question}"
 
-Current Rugplay Market Context:
+Current Cryptonix Market Context:
 - Platform currency: $ (or *BUSS)
 - Total listed coins: ${marketOverview?.marketStats.totalCoins || 0}
 - Total market cap: $${marketOverview?.marketStats.totalMarketCap.toFixed(2) || '0'}
@@ -271,8 +271,8 @@ Determine the optimal resolution date based on the question type:
 - If the question explicitly states the date, use that as the resolution date
 
 Also determine:
-- Whether this question requires web search (external events, real-world data, non-Rugplay information)
-- If the question is related to the Rugplay market, and contains what appears to be a coin name, ensure it's properly formatted (e.g. *BTC, *DOGE). Invalid question example: "will BTC reach $100,000 in 1 hour?" (invalid coin format, should be *BTC). 
+- Whether this question requires web search (external events, real-world data, non-Cryptonix information)
+- If the question is related to the Cryptonix market, and contains what appears to be a coin name, ensure it's properly formatted (e.g. *BTC, *DOGE). Invalid question example: "will BTC reach $100,000 in 1 hour?" (invalid coin format, should be *BTC). 
 - Provide a specific resolution date with time (suggest times between 12:00-20:00 UTC for good global coverage) The current date and time is ${new Date().toISOString()}.
 
 Note: All coins use *SYMBOL format (e.g., *BTC, *DOGE). All trading is simulated with *BUSS currency.
@@ -321,7 +321,7 @@ Provide your response in the specified JSON format with a precise ISO 8601 datet
 export async function resolveQuestion(
     question: string,
     requiresWebSearch: boolean,
-    customRugplayData?: string
+    customCryptonixData?: string
 ): Promise<QuestionResolutionResult> {
     if (!OPENROUTER_API_KEY) {
         return {
@@ -333,25 +333,25 @@ export async function resolveQuestion(
 
     const model = requiresWebSearch ? MODELS.WEB_SEARCH : MODELS.STANDARD;
 
-    const rugplayData = customRugplayData || await getRugplayData(question);
+    const CryptonixData = customCryptonixData || await getCryptonixData(question);
 
     const prompt = `
-You are resolving a prediction market question with a definitive YES or NO answer for Rugplay.
+You are resolving a prediction market question with a definitive YES or NO answer for Cryptonix.
 
 Question: "${question}"
 
-Current Rugplay Platform Data:
-${rugplayData}
+Current Cryptonix Platform Data:
+${CryptonixData}
 
 Instructions:
 1. Provide a definitive YES or NO answer based on current factual information
 2. Give your confidence level (0-100) in this resolution
 3. Provide clear reasoning for your decision with specific data references
 4. For coin-specific questions that mention non-existent coins, answer NO (the coin doesn't exist, so it can't reach any price)
-5. For coin-specific questions about existing coins, reference actual market data from Rugplay
+5. For coin-specific questions about existing coins, reference actual market data from Cryptonix
 6. For external events, use web search if enabled
 
-Context about Rugplay:
+Context about Cryptonix:
 - Cryptocurrency trading simulation platform with fake money (*BUSS)
 - All coins use *SYMBOL format (e.g., *BTC, *DOGE, *SHIB)
 - Features AMM liquidity pools, rug pull mechanics, and real market dynamics
@@ -360,8 +360,8 @@ Context about Rugplay:
 - Non-existent coins cannot reach any price targets
 
 Examples of how to handle non-existent coins:
-- Question: "Will *NONEXISTENT reach $1?" → Answer: NO (95% confidence) - "The coin *NONEXISTENT does not exist on the Rugplay platform"
-- Question: "Will *REALCOIN go from $0.001 to $1 in 1 hour?" → Answer: YES (100% confidence) - "According to the Rugplay data, it has."
+- Question: "Will *NONEXISTENT reach $1?" → Answer: NO (95% confidence) - "The coin *NONEXISTENT does not exist on the Cryptonix platform"
+- Question: "Will *REALCOIN go from $0.001 to $1 in 1 hour?" → Answer: YES (100% confidence) - "According to the Cryptonix data, it has."
 
 Provide your response in the specified JSON format.
 `;
@@ -401,7 +401,7 @@ Provide your response in the specified JSON format.
     }
 }
 
-export async function getRugplayData(question?: string): Promise<string> {
+export async function getCryptonixData(question?: string): Promise<string> {
     try {
         const marketOverview = await getMarketOverview();
 
@@ -421,7 +421,7 @@ export async function getRugplayData(question?: string): Promise<string> {
                 coinSpecificData = '\n\nCoin Analysis for Question:';
 
                 if (nonExistentCoins.length > 0) {
-                    coinSpecificData += `\nNON-EXISTENT COINS: ${nonExistentCoins.map(symbol => `*${symbol}`).join(', ')} - These coins do not exist on the Rugplay platform`;
+                    coinSpecificData += `\nNON-EXISTENT COINS: ${nonExistentCoins.map(symbol => `*${symbol}`).join(', ')} - These coins do not exist on the Cryptonix platform`;
                 }
 
                 if (existingCoins.length > 0) {
@@ -450,7 +450,7 @@ ${coin.recentTrades.slice(0, 3).map(trade =>
 
         return `
 Current Timestamp: ${new Date().toISOString()}
-Platform: Rugplay - Cryptocurrency Trading Simulation
+Platform: Cryptonix - Cryptocurrency Trading Simulation
 
 Market Overview:
 - Total Listed Coins: ${marketOverview?.marketStats.totalCoins || 0}
@@ -473,7 +473,7 @@ Platform Details:
 - Coins use *SYMBOL format (e.g., *BTC, *DOGE, *SHIB)${coinSpecificData}
         `;
     } catch (error) {
-        console.error('Error generating Rugplay data:', error);
+        console.error('Error generating Cryptonix data:', error);
         return `Couldn't retrieve data, please try again later.`;
     }
 }

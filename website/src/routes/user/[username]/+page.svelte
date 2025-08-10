@@ -348,11 +348,11 @@
 
 <SEO
 	title={profileData?.profile?.name
-		? `${profileData.profile.name} (@${profileData.profile.username}) - Rugplay`
-		: `@${username} - Rugplay`}
+		? `${profileData.profile.name} (@${profileData.profile.username}) - Cryptonix`
+		: `@${username} - Cryptonix`}
 	description={profileData?.profile?.bio
-		? `${profileData.profile.bio} - View ${profileData.profile.name}'s simulated trading activity and virtual portfolio in the Rugplay cryptocurrency simulation game.`
-		: `View @${username}'s profile and simulated trading activity in Rugplay - cryptocurrency trading simulation game platform.`}
+		? `${profileData.profile.bio} - View ${profileData.profile.name}'s simulated trading activity and virtual portfolio in the Cryptonix cryptocurrency simulation game.`
+		: `View @${username}'s profile and simulated trading activity in Cryptonix - cryptocurrency trading simulation game platform.`}
 	type="profile"
 	image={profileData?.profile?.image ? getPublicUrl(profileData.profile.image) : '/apple-touch-icon.png'}
 	imageAlt={profileData?.profile?.name

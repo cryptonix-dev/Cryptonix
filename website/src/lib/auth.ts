@@ -11,17 +11,18 @@ import { apiKey } from "better-auth/plugins";
 
 if (!privateEnv.GOOGLE_CLIENT_ID) throw new Error('GOOGLE_CLIENT_ID is not set');
 if (!privateEnv.GOOGLE_CLIENT_SECRET) throw new Error('GOOGLE_CLIENT_SECRET is not set');
+// Discord is optional; if provided, we enable it
 
 const AUTH_ORIGIN = publicEnv.PUBLIC_BETTER_AUTH_URL || 'http://localhost:5173';
 
 export const auth = betterAuth({
     basePath: "/api/auth",
     secret: privateEnv.PRIVATE_BETTER_AUTH_SECRET,
-    appName: "Rugplay",
+    appName: "Cryptonix",
 
     trustedOrigins: [
         AUTH_ORIGIN,
-        "http://rugplay.com",
+        "http://Cryptonix.com",
         "http://localhost:5173",
     ],
 
@@ -78,7 +79,42 @@ export const auth = betterAuth({
                     username: newUsername,
                 };
             },
-        }
+        },
+        ...(privateEnv.DISCORD_CLIENT_ID && privateEnv.DISCORD_CLIENT_SECRET
+            ? {
+                discord: {
+                    clientId: privateEnv.DISCORD_CLIENT_ID,
+                    clientSecret: privateEnv.DISCORD_CLIENT_SECRET,
+                    // Better Auth provides normalized profile fields; keep mapping minimal
+                    mapProfileToUser: async (profile: any) => {
+                        const newUsername = generateUsername();
+                        let s3ImageKey: string | null = null;
+                        if (profile.picture) {
+                            try {
+                                const response = await fetch(profile.picture);
+                                if (response.ok) {
+                                    const blob = await response.blob();
+                                    const arrayBuffer = await blob.arrayBuffer();
+                                    s3ImageKey = await uploadProfilePictureRaw(
+                                        profile.sub,
+                                        new Uint8Array(arrayBuffer),
+                                        blob.type || 'image/jpeg'
+                                    );
+                                }
+                            } catch (e) {
+                                console.error('Discord avatar upload failed:', e);
+                            }
+                        }
+                        return {
+                            name: profile.name || profile.username,
+                            email: profile.email, // requires email scope
+                            image: s3ImageKey,
+                            username: newUsername,
+                        };
+                    }
+                }
+            }
+            : {})
     },
     user: {
         additionalFields: {

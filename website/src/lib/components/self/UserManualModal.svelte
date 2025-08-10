@@ -56,7 +56,7 @@
 			id: 4,
 			title: 'AMM - Automated Market Maker',
 			description:
-				'Rugplay uses an AMM system where prices are calculated automatically based on supply and demand. The more you buy, the higher the price goes. The more you sell, the lower it drops. Large trades create "slippage" - the price change during your trade.',
+				'Cryptonix uses an AMM system where prices are calculated automatically based on supply and demand. The more you buy, the higher the price goes. The more you sell, the lower it drops. Large trades create "slippage" - the price change during your trade.',
 			icon: BarChart3,
 			image: '/tips/amm.avif'
 		},

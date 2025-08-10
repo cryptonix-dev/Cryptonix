@@ -58,7 +58,7 @@
 			<CardContent>
 				<div class="space-y-3">
 					<p class="text-muted-foreground text-sm">
-						Rugplay is a realistic cryptocurrency trading simulation that focuses on DeFi
+						Cryptonix is a realistic cryptocurrency trading simulation that focuses on DeFi
 						(Decentralized Finance) mechanics and the inherent risks of decentralized trading.
 					</p>
 					<p class="text-muted-foreground text-sm">
@@ -148,7 +148,7 @@
 						<Button
 							variant="outline"
 							size="sm"
-							href="https://github.com/outpoot/rugplay"
+							href="https://github.com/outpoot/Cryptonix"
 							target="_blank"
 							rel="noopener"
 						>

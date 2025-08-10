@@ -102,6 +102,9 @@
 </script>
 
 <div class="container mx-auto max-w-4xl py-6">
+  <div class="mb-4">
+    <Button variant="outline" onclick={() => (window.location.href = '/admin')}>← Back to Admin</Button>
+  </div>
 	<Card.Root>
 		<Card.Header class="flex flex-row items-center justify-between">
 			<Card.Title class="flex items-center gap-2">

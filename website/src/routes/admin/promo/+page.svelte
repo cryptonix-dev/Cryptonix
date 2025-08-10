@@ -119,7 +119,7 @@
 </script>
 
 <svelte:head>
-	<title>Promo Codes - Admin | Rugplay</title>
+	<title>Promo Codes - Admin | Cryptonix</title>
 	<meta name="robots" content="noindex, nofollow" />
 </svelte:head>
 
@@ -131,7 +131,8 @@
 		</div>
 	</div>
 {:else}
-	<div class="container mx-auto space-y-4 p-4">
+  <div class="container mx-auto space-y-4 p-4">
+    <Button variant="outline" onclick={() => (window.location.href = '/admin')}>← Back to Admin</Button>
 		<div class="flex items-center gap-2">
 			<Ticket class="h-5 w-5" />
 			<h1 class="text-2xl font-bold">Promo Codes</h1>

@@ -46,7 +46,7 @@ export async function HEAD({ request }) {
         return new Response(null, {
             headers: {
                 'Content-Type': 'application/json; charset=utf-8',
-                'Content-Disposition': `attachment; filename="rugplay-data-${userId}-${new Date().toISOString().split('T')[0]}.json"`,
+                'Content-Disposition': `attachment; filename="Cryptonix-data-${userId}-${new Date().toISOString().split('T')[0]}.json"`,
                 'Content-Length': estimatedSize.toString(),
                 'Cache-Control': 'no-cache, no-store, must-revalidate',
                 'Pragma': 'no-cache',
@@ -225,7 +225,7 @@ export async function GET({ request }) {
         return new Response(jsonData, {
             headers: {
                 'Content-Type': 'application/json; charset=utf-8',
-                'Content-Disposition': `attachment; filename="rugplay-data-${userId}-${new Date().toISOString().split('T')[0]}.json"`,
+                'Content-Disposition': `attachment; filename="Cryptonix-data-${userId}-${new Date().toISOString().split('T')[0]}.json"`,
                 'Content-Length': dataSize.toString(),
                 'Cache-Control': 'no-cache, no-store, must-revalidate',
                 'Pragma': 'no-cache',

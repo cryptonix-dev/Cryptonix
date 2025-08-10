@@ -1,6 +1,6 @@
-# Rugplay Website
+# Cryptonix Website
 
-This is the main website component of Rugplay, built with SvelteKit. It handles the user interface, trading functionality, and market visualization.
+This is the main website component of Cryptonix, built with SvelteKit. It handles the user interface, trading functionality, and market visualization.
 
 ## Development
 

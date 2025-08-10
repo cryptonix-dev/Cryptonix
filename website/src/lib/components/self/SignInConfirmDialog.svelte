@@ -10,12 +10,19 @@
 	import { signIn } from '$lib/auth-client';
 	import { page } from '$app/state';
 
-	async function onConfirm() {
+async function onConfirm() {
 		await signIn.social({
 			provider: 'google',
 			callbackURL: `${page.url.pathname}?signIn=1`
 		});
 	}
+
+async function onDiscord() {
+  await signIn.social({
+    provider: 'discord',
+    callbackURL: `${page.url.pathname}?signIn=1`
+  });
+}
 
 	let { open = $bindable(false) } = $props<{
 		open?: boolean;
@@ -25,7 +32,7 @@
 <Dialog bind:open>
 	<DialogContent class="sm:max-w-md">
 		<DialogHeader>
-			<DialogTitle>Sign in to Rugplay</DialogTitle>
+			<DialogTitle>Sign in to Cryptonix</DialogTitle>
 			<DialogDescription>
 				Choose a service to sign in with. Your account will be created automatically if you don't
 				have one.
@@ -44,6 +51,19 @@
 				/>
 				<span>Continue with Google</span>
 			</Button>
+
+  <Button
+    class="flex w-full items-center justify-center gap-2"
+    variant="outline"
+    onclick={() => onDiscord()}
+  >
+    <img
+      class="h-5 w-5"
+      src="https://cdn.worldvectorlogo.com/logos/discord-6.svg"
+      alt="Discord"
+    />
+    <span>Continue with Discord</span>
+  </Button>
 
 			<p class="text-muted-foreground text-center text-xs">
 				By continuing, you agree to our

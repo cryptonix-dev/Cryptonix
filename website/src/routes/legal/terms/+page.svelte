@@ -15,8 +15,8 @@
 </script>
 
 <SEO 
-	title="Terms of Service - Rugplay"
-	description="Terms of Service for Rugplay - cryptocurrency trading simulation game. Learn about virtual currency, rug pull mechanics, gambling features, and platform rules."
+	title="Terms of Service - Cryptonix"
+	description="Terms of Service for Cryptonix - cryptocurrency trading simulation game. Learn about virtual currency, rug pull mechanics, gambling features, and platform rules."
 	keywords="terms of service, legal terms, simulation game rules, virtual currency terms, rug pull simulation"
 />
 
@@ -36,7 +36,7 @@
 			<TrendingDown class="h-4 w-4" />
 			<Alert.Title>Virtual Currency Simulation Only</Alert.Title>
 			<Alert.Description>
-				Rugplay uses only virtual currency (*BUSS or "$") with no real monetary value. All trading,
+				Cryptonix uses only virtual currency (*BUSS or "$") with no real monetary value. All trading,
 				including rug pulls, is simulated for educational purposes only.
 			</Alert.Description>
 		</Alert.Root>
@@ -47,12 +47,12 @@
 			<Card.Content>
 				<h2 class="mb-4 text-2xl font-semibold">1. Acceptance of Terms</h2>
 				<p class="mb-4">
-					By accessing and using Rugplay ("the Platform", "we", "us", "our"), you accept and agree
+					By accessing and using Cryptonix ("the Platform", "we", "us", "our"), you accept and agree
 					to be bound by these Terms of Service ("Terms"). If you do not agree to these Terms, you
 					may not use the Platform.
 				</p>
 				<p>
-					These Terms constitute a legally binding agreement between you and Rugplay regarding your
+					These Terms constitute a legally binding agreement between you and Cryptonix regarding your
 					use of our cryptocurrency trading simulation platform.
 				</p>
 			</Card.Content>
@@ -91,7 +91,7 @@
 					<div>
 						<h3 class="mb-2 text-lg font-medium">3.1 Age Requirements</h3>
 						<p class="mb-3">
-							You must be at least {MINIMUM_AGE} years old to use Rugplay due to the presence of gambling-style
+							You must be at least {MINIMUM_AGE} years old to use Cryptonix due to the presence of gambling-style
 							features (coinflip and slots), even though they use only virtual currency.
 						</p>
 						<p class="text-muted-foreground text-sm">
@@ -113,7 +113,7 @@
 
 					<div>
 						<h3 class="mb-2 text-lg font-medium">3.3 Prohibited Users</h3>
-						<p>You may not use Rugplay if you are:</p>
+						<p>You may not use Cryptonix if you are:</p>
 						<ul class="ml-6 list-disc space-y-2">
 							<li>Located in a jurisdiction where use is prohibited</li>
 							<li>Previously banned from the Platform</li>
@@ -132,7 +132,7 @@
 					<TrendingDown class="h-4 w-4" />
 					<Alert.Title>Rug Pull Risk Simulation</Alert.Title>
 					<Alert.Description>
-						Rugplay deliberately simulates rug pull scenarios where coin creators or large holders
+						Cryptonix deliberately simulates rug pull scenarios where coin creators or large holders
 						can crash prices by selling significant holdings. This is a core educational feature.
 					</Alert.Description>
 				</Alert.Root>
@@ -154,7 +154,7 @@
 
 					<div>
 						<h3 class="mb-2 text-lg font-medium">4.2 Trading Mechanics</h3>
-						<p class="mb-3">Trading on Rugplay includes realistic mechanics such as:</p>
+						<p class="mb-3">Trading on Cryptonix includes realistic mechanics such as:</p>
 						<ul class="ml-6 list-disc space-y-2">
 							<li>
 								<strong>Slippage:</strong> Large trades affect prices based on liquidity pool ratios
@@ -202,7 +202,7 @@
 					<div>
 						<h3 class="mb-2 text-lg font-medium">5.1 Acceptable Use</h3>
 						<p class="mb-3">
-							You agree to use Rugplay only for lawful purposes and in accordance with these Terms.
+							You agree to use Cryptonix only for lawful purposes and in accordance with these Terms.
 							You will not:
 						</p>
 						<ul class="ml-6 list-disc space-y-2">
@@ -313,7 +313,7 @@
 				<div class="space-y-4">
 					<div>
 						<h3 class="mb-2 text-lg font-medium">7.1 Virtual Gambling Games</h3>
-						<p class="mb-3">Rugplay includes simulated gambling features:</p>
+						<p class="mb-3">Cryptonix includes simulated gambling features:</p>
 						<ul class="ml-6 list-disc space-y-2">
 							<li><strong>Coinflip:</strong> Binary outcome betting with virtual currency</li>
 							<li>
@@ -412,7 +412,7 @@
 					<AlertTriangle class="h-4 w-4" />
 					<Alert.Title>Important Legal Disclaimers</Alert.Title>
 					<Alert.Description>
-						Rugplay is provided "as is" without warranties. We are not liable for virtual losses,
+						Cryptonix is provided "as is" without warranties. We are not liable for virtual losses,
 						rug pulls, or any platform-related damages.
 					</Alert.Description>
 				</Alert.Root>
@@ -448,7 +448,7 @@
 
 					<div>
 						<h3 class="mb-2 text-lg font-medium">9.3 Educational Purpose</h3>
-						<p>Rugplay is designed for educational and entertainment purposes. It is not:</p>
+						<p>Cryptonix is designed for educational and entertainment purposes. It is not:</p>
 						<ul class="ml-6 list-disc space-y-2">
 							<li>Financial advice or investment guidance</li>
 							<li>A substitute for professional financial education</li>
@@ -504,7 +504,7 @@
 				<div class="space-y-4">
 					<div>
 						<h3 class="mb-2 text-lg font-medium">11.1 Platform Ownership</h3>
-						<p>Rugplay and all related intellectual property are owned by us, including:</p>
+						<p>Cryptonix and all related intellectual property are owned by us, including:</p>
 						<ul class="ml-6 list-disc space-y-2">
 							<li>Software, code, algorithms, and technical systems</li>
 							<li>Trademarks, logos, and branding</li>
@@ -517,7 +517,7 @@
 					<div>
 						<h3 class="mb-2 text-lg font-medium">11.2 Past Project Assets and Themes</h3>
 						<p class="mb-3">
-							Rugplay incorporates intellectual property from creator's past projects, including:
+							Cryptonix incorporates intellectual property from creator's past projects, including:
 						</p>
 						<ul class="ml-6 list-disc space-y-2">
 							<li>Characters, artwork, and visual themes from previous projects</li>
@@ -525,7 +525,7 @@
 							<li>Any derivative works or adaptations of existing intellectual property</li>
 						</ul>
 						<p class="text-muted-foreground mt-3 text-sm">
-							All past project assets used in Rugplay are owned by the platform creators or used
+							All past project assets used in Cryptonix are owned by the platform creators or used
 							with proper authorization.
 						</p>
 					</div>
@@ -550,7 +550,7 @@
 					in our Privacy Policy, which is incorporated into these Terms by reference.
 				</p>
 				<p>
-					By using Rugplay, you consent to our data practices as described in the Privacy Policy,
+					By using Cryptonix, you consent to our data practices as described in the Privacy Policy,
 					including the retention of anonymized data after account deletion.
 				</p>
 			</Card.Content>
@@ -562,7 +562,7 @@
 						<h3 class="mb-2 text-lg font-medium">13.1 Entire Agreement</h3>
 						<p>
 							These Terms, along with our Privacy Policy, constitute the entire agreement between
-							you and Rugplay regarding use of the Platform.
+							you and Cryptonix regarding use of the Platform.
 						</p>
 					</div>
 
@@ -598,7 +598,7 @@
 					<strong>Contact:</strong>
 					<a href="mailto:{CONTACT_EMAIL}" class="text-primary underline">{CONTACT_EMAIL}</a>
 				</p>
-				<p class="mb-2"><strong>Platform:</strong> Rugplay</p>
+				<p class="mb-2"><strong>Platform:</strong> Cryptonix</p>
 			</div>
 		</div>
 

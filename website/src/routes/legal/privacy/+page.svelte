@@ -13,8 +13,8 @@
 </script>
 
 <SEO 
-	title="Privacy Policy - Rugplay"
-	description="Privacy Policy for Rugplay cryptocurrency simulation game. Learn about data collection, account deletion process, virtual currency privacy, and your rights."
+	title="Privacy Policy - Cryptonix"
+	description="Privacy Policy for Cryptonix cryptocurrency simulation game. Learn about data collection, account deletion process, virtual currency privacy, and your rights."
 	keywords="privacy policy, data protection, account deletion, virtual currency privacy, simulation game privacy"
 />
 
@@ -50,7 +50,7 @@
 					it, and what happens when you delete your account.
 				</p>
 				<p>
-					<strong>Platform Note:</strong> Rugplay is a simulated trading environment using virtual currency
+					<strong>Platform Note:</strong> Cryptonix is a simulated trading environment using virtual currency
 					("*BUSS" or "$") with no real monetary value.
 				</p>
 			</Card.Content>
@@ -382,7 +382,7 @@
 					<strong>Contact:</strong>
 					<a href="mailto:{CONTACT_EMAIL}" class="text-primary underline">{CONTACT_EMAIL}</a>
 				</p>
-				<p><strong>Platform:</strong> Rugplay - virtual cryptocurrency trading simulation</p>
+				<p><strong>Platform:</strong> Cryptonix - virtual cryptocurrency trading simulation</p>
 			</div>
 		</div>
 

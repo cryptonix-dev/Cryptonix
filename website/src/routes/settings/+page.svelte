@@ -333,8 +333,8 @@
 </script>
 
 <SEO
-	title="Settings - Rugplay"
-	description="Manage your Rugplay account settings, profile information, audio preferences, and privacy options."
+	title="Settings - Cryptonix"
+	description="Manage your Cryptonix account settings, profile information, audio preferences, and privacy options."
 	keywords="game account settings, profile settings game, privacy settings, audio settings game"
 />
 
