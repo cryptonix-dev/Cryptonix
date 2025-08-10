@@ -8,7 +8,7 @@ import { eq } from 'drizzle-orm';
 import { MAX_FILE_SIZE } from '$lib/data/constants';
 import { isNameAppropriate } from '$lib/server/moderation';
 
-async function validateInputs(name: string, bio: string, username: string, avatarFile: File | null, portfolioTheme?: string, bannerFile?: File | null) {
+async function validateInputs(name: string, bio: string, username: string, avatarFile: File | null, portfolioTheme?: string, avatarDecoration?: string, bannerFile?: File | null) {
     if (!name || !name.trim()) {
         throw error(400, 'Display name is required');
     }
@@ -57,9 +57,13 @@ async function validateInputs(name: string, bio: string, username: string, avata
     if (avatarFile && avatarFile.size > MAX_FILE_SIZE) {
         throw error(400, 'Avatar file must be smaller than 1MB');
     }
-    if (portfolioTheme && !/^([a-z0-9_-]{1,20})$/i.test(portfolioTheme)) {
-        throw error(400, 'Invalid theme value');
-    }
+    	if (portfolioTheme && !/^([a-z0-9_-]{1,20})$/i.test(portfolioTheme)) {
+		throw error(400, 'Invalid theme value');
+	}
+
+	if (avatarDecoration && !/^([a-z0-9_-]{1,20})$/i.test(avatarDecoration)) {
+		throw error(400, 'Invalid decoration value');
+	}
     if (bannerFile && bannerFile.size > MAX_FILE_SIZE * 5) {
         throw error(400, 'Banner image must be smaller than 5MB');
     }
@@ -83,10 +87,11 @@ export async function POST({ request }) {
     const bannerFile = formData.get('banner') as File | null;
     const removeBanner = formData.get('removeBanner') as string | null;
     const portfolioTheme = (formData.get('portfolioTheme') as string) || undefined;
+    const avatarDecoration = (formData.get('avatarDecoration') as string) || undefined;
 
     name = name?.trim().replace(/\s+/g, ' ');
 
-    await validateInputs(name, bio, username, avatarFile, portfolioTheme, bannerFile);
+    await validateInputs(name, bio, username, avatarFile, portfolioTheme, avatarDecoration, bannerFile);
 
     const updates: Record<string, any> = {
         name,
@@ -95,6 +100,7 @@ export async function POST({ request }) {
         updatedAt: new Date()
     };
     if (portfolioTheme) updates.portfolioTheme = portfolioTheme;
+    if (avatarDecoration !== undefined) updates.avatarDecoration = avatarDecoration;
 
     if (avatarFile && avatarFile.size > 0) {
         try {

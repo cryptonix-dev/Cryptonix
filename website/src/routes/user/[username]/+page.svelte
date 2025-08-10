@@ -5,6 +5,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import DataTable from '$lib/components/self/DataTable.svelte';
 	import ProfileBadges from '$lib/components/self/ProfileBadges.svelte';
+	import AvatarDecoration from '$lib/components/self/AvatarDecoration.svelte';
 	import ProfileSkeleton from '$lib/components/self/skeletons/ProfileSkeleton.svelte';
 	import SEO from '$lib/components/self/SEO.svelte';
 	import { getPublicUrl, formatPrice, formatValue, formatQuantity, formatDate } from '$lib/utils';
@@ -362,7 +363,7 @@
 	twitterCard="summary"
 />
 
- <div class={`container mx-auto max-w-6xl p-6 theme-${portfolioTheme}`}>
+ <div class={`min-h-[calc(100dvh-4rem)] container mx-auto max-w-6xl p-6 theme-${(portfolioTheme || 'default').replace('gradient-','')}`} style="background: var(--background)">
 	{#if loading}
 		<ProfileSkeleton />
 	{:else if !profileData}
@@ -385,15 +386,24 @@
 				<div class="flex flex-col gap-4 sm:flex-row sm:items-start">
 					<!-- Avatar -->
 					<div class="flex-shrink-0">
-						<Avatar.Root class="size-20 sm:size-24">
-							<Avatar.Image
-								src={getPublicUrl(profileData.profile.image)}
-								alt={profileData.profile.name}
-							/>
-							<Avatar.Fallback class="text-xl"
-								>{profileData.profile.name.charAt(0).toUpperCase()}</Avatar.Fallback
-							>
-						</Avatar.Root>
+                        <AvatarDecoration 
+                            decoration={profileData.profile.avatarDecoration}
+                            prestigeLevel={profileData.profile.prestigeLevel}
+                            isAdmin={profileData.profile.isAdmin}
+                            size="lg"
+                        >
+                            {#snippet children()}
+                                <Avatar.Root class="size-20 sm:size-24">
+                                    <Avatar.Image
+                                        src={getPublicUrl(profileData.profile.image)}
+                                        alt={profileData.profile.name}
+                                    />
+                                    <Avatar.Fallback class="text-xl">
+                                        {profileData.profile.name.charAt(0).toUpperCase()}
+                                    </Avatar.Fallback>
+                                </Avatar.Root>
+                            {/snippet}
+                        </AvatarDecoration>
 					</div>
 
 					<!-- Profile Info -->
@@ -470,15 +480,15 @@
 				<Card.Content class="p-4">
 					<div class="flex items-center justify-between">
 						<div class="text-muted-foreground text-sm font-medium">Buy/Sell Ratio</div>
-						<div class="flex gap-1">
-							<div class="bg-success h-2 w-2 rounded-full"></div>
-							<div class="h-2 w-2 rounded-full bg-red-500"></div>
-						</div>
+                        <div class="flex gap-1">
+                            <div class="bg-success h-2 w-2 rounded-full"></div>
+                            <div class="h-2 w-2 rounded-full bg-destructive"></div>
+                        </div>
 					</div>
 					<div class="mt-1 flex items-center gap-2">
 						<span class="text-success text-xl font-bold">{buyPercentage.toFixed(1)}%</span>
 						<span class="text-muted-foreground text-xs">buy</span>
-						<span class="text-xl font-bold text-red-600">{sellPercentage.toFixed(1)}%</span>
+                        <span class="text-xl font-bold text-destructive">{sellPercentage.toFixed(1)}%</span>
 						<span class="text-muted-foreground text-xs">sell</span>
 					</div>
 				</Card.Content>
@@ -517,13 +527,13 @@
 						<TrendingDown class="h-4 w-4 text-red-600" />
 					</div>
 					<div class="mt-1">
-						<div class="text-2xl font-bold text-red-600">
+                        <div class="text-2xl font-bold text-destructive">
 							{formatValue(totalSellVolume)}
 						</div>
 						<div class="text-muted-foreground text-xs">Total amount received</div>
 					</div>
 					<div class="border-muted mt-3 border-t pt-3">
-						<div class="text-lg font-bold text-red-600">
+                        <div class="text-lg font-bold text-destructive">
 							{formatValue(sellVolume24h)}
 						</div>
 						<div class="text-muted-foreground text-xs">24h sell volume</div>

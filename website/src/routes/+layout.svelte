@@ -152,7 +152,9 @@
 			<div class="@container/main flex flex-col gap-2">
 				<div class="flex flex-col gap-4 md:gap-6">
 					<div class="px-4 md:py-4 lg:px-6">
-						{@render children()}
+						<div class={`min-h-[calc(100dvh-8rem)] theme-${(($USER_DATA?.portfolioTheme) || 'default').replace('gradient-','')}`} style="background: var(--background)">
+							{@render children()}
+						</div>
 					</div>
 				</div>
 			</div>

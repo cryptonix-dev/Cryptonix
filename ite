@@ -1,0 +1,5 @@
+[33m1a69c7d[m fix(avatar): align bucket, cache-bust avatars, clear session cache; improve upload reliability (retries + HTTP fallback); ensure circular avatar rendering
+[33m26c588d[m Changed colors to blue, and changed logos. Some logos might be wrong i will be fixing that soon
+[33m45a49e3[m feat: api
+[33mec64267[m feat: prestige system
+[33me61c41e[m feat: implement notification system

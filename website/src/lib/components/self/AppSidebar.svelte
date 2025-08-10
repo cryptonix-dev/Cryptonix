@@ -53,6 +53,7 @@
 	import { UNREAD_COUNT, fetchNotifications } from '$lib/stores/notifications';
  import { DM_UNREAD } from '$lib/stores/websocket';
  import SwitchAccountDialog from './SwitchAccountDialog.svelte';
+import AvatarDecoration from './AvatarDecoration.svelte';
 
 	const data = {
 		navMain: [
@@ -401,10 +402,19 @@
 									class="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
 									{...props}
 								>
-                                    <Avatar.Root class="size-8 rounded-full">
-										<Avatar.Image src={getPublicUrl($USER_DATA.image)} alt={$USER_DATA.name} />
-										<Avatar.Fallback class="rounded-lg">?</Avatar.Fallback>
-									</Avatar.Root>
+                                    <AvatarDecoration 
+                                        decoration={$USER_DATA.avatarDecoration}
+                                        prestigeLevel={$USER_DATA.prestigeLevel}
+                                        isAdmin={$USER_DATA.isAdmin}
+                                        size="sm"
+                                    >
+                                        {#snippet children()}
+                                            <Avatar.Root class="size-8 rounded-full">
+                                                <Avatar.Image src={getPublicUrl($USER_DATA.image)} alt={$USER_DATA.name} />
+                                                <Avatar.Fallback class="rounded-lg">?</Avatar.Fallback>
+                                            </Avatar.Root>
+                                        {/snippet}
+                                    </AvatarDecoration>
 									<div class="grid flex-1 text-left text-sm leading-tight">
 										<span class="truncate font-medium">{$USER_DATA.name}</span>
 										<span class="truncate text-xs">@{$USER_DATA.username}</span>
@@ -421,10 +431,19 @@
 						>
 							<DropdownMenu.Label class="p-0 font-normal">
 								<div class="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-                                    <Avatar.Root class="size-8 rounded-full">
-										<Avatar.Image src={getPublicUrl($USER_DATA.image)} alt={$USER_DATA.name} />
-										<Avatar.Fallback class="rounded-lg">?</Avatar.Fallback>
-									</Avatar.Root>
+                                    <AvatarDecoration 
+                                        decoration={$USER_DATA.avatarDecoration}
+                                        prestigeLevel={$USER_DATA.prestigeLevel}
+                                        isAdmin={$USER_DATA.isAdmin}
+                                        size="sm"
+                                    >
+                                        {#snippet children()}
+                                            <Avatar.Root class="size-8 rounded-full">
+                                                <Avatar.Image src={getPublicUrl($USER_DATA.image)} alt={$USER_DATA.name} />
+                                                <Avatar.Fallback class="rounded-lg">?</Avatar.Fallback>
+                                            </Avatar.Root>
+                                        {/snippet}
+                                    </AvatarDecoration>
 									<div class="grid flex-1 text-left text-sm leading-tight">
 										<span class="truncate font-medium">{$USER_DATA.name}</span>
 										<span class="truncate text-xs">@{$USER_DATA.username}</span>

@@ -18,7 +18,8 @@ export type User = {
     volumeMuted: boolean;
 
     prestigeLevel: number;
-    portfolioTheme?: string;
+    	portfolioTheme?: string;
+	avatarDecoration?: string;
     bannerImage?: string | null;
 } | null;
 

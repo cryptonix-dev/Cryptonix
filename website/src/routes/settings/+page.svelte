@@ -23,6 +23,7 @@
 	let bio = $state($USER_DATA?.bio ?? '');
 	let username = $state($USER_DATA?.username || '');
   let portfolioTheme = $state($USER_DATA?.portfolioTheme || 'default');
+  let avatarDecoration = $state($USER_DATA?.avatarDecoration || '');
 
 	const initialUsername = $USER_DATA?.username || '';
 	let avatarFile: FileList | undefined = $state(undefined);
@@ -36,11 +37,12 @@
 
 	let nameError = $state('');
 
-  let isDirty = $derived(
+  	let isDirty = $derived(
 		name !== ($USER_DATA?.name || '') ||
 			bio !== ($USER_DATA?.bio ?? '') ||
 			username !== ($USER_DATA?.username || '') ||
           portfolioTheme !== ($USER_DATA?.portfolioTheme || 'default') ||
+          avatarDecoration !== ($USER_DATA?.avatarDecoration || '') ||
           avatarFile !== undefined ||
           bannerFile !== undefined ||
           bannerRemoved
@@ -177,15 +179,44 @@
             } else if (bannerRemoved) {
               fd.append('removeBanner', '1');
             }
-            fd.append('portfolioTheme', portfolioTheme);
+            		fd.append('portfolioTheme', portfolioTheme);
+		fd.append('avatarDecoration', avatarDecoration);
+
+			console.log('Submitting avatar decoration:', avatarDecoration);
 
 			const res = await fetch('/api/settings', { method: 'POST', body: fd });
 
 			if (res.ok) {
+				console.log('Settings saved successfully, updating store...');
+				
+				// Update the USER_DATA store immediately with the new values
+				if ($USER_DATA) {
+					USER_DATA.update(userData => {
+						if (userData) {
+							const updatedData = {
+								...userData,
+								name: name.trim(),
+								bio: bio,
+								username: username,
+								portfolioTheme: portfolioTheme,
+								avatarDecoration: avatarDecoration
+							};
+							console.log('Updated user data:', updatedData);
+							return updatedData;
+						}
+						return userData;
+					});
+				}
+				
 				await invalidateAll();
 				toast.success('Settings updated successfully!', {
 					action: { label: 'Refresh', onClick: () => window.location.reload() }
 				});
+				
+				// Force a page reload to ensure the change is visible
+				setTimeout(() => {
+					window.location.reload();
+				}, 1000);
 			} else {
 				const result = await res.json();
 				toast.error('Failed to update settings', {
@@ -193,6 +224,7 @@
 				});
 			}
 		} catch (error) {
+			console.error('Error saving settings:', error);
 			toast.error('Failed to update settings', {
 				description: 'An unexpected error occurred'
 			});
@@ -477,17 +509,55 @@
 						<Textarea id="bio" bind:value={bio} rows={4} placeholder="Tell us about yourself" />
 					</div>
 
-          <div class="space-y-2">
+          <div class="space-y-3">
             <Label for="theme">Portfolio Theme</Label>
-            <select id="theme" class="border rounded px-2 py-1 bg-background" bind:value={portfolioTheme}>
-              <option value="default">Default</option>
-              <option value="emerald">Emerald</option>
-              <option value="rose">Rose</option>
-              <option value="violet">Violet</option>
-              <option value="amber">Amber</option>
-              <option value="slate">Slate</option>
+
+            <!-- Gradient toggle removed -->
+
+            <div class="grid grid-cols-3 sm:grid-cols-6 gap-3">
+              {#each ['default','emerald','rose','violet','amber','slate'] as base}
+                {#key base}
+                  <button type="button" class={`relative h-16 rounded-lg overflow-hidden border ${portfolioTheme.endsWith(base) ? 'ring-2 ring-primary' : 'hover:border-primary/50'}`} onclick={() => {
+                    portfolioTheme = base;
+                  }}>
+                    <div class={`absolute inset-0 rounded-lg theme-${base}`} style="background: var(--background)"></div>
+                    <span class="relative z-10 block px-2 py-1 text-xs font-medium capitalize">{base}</span>
+                  </button>
+                {/key}
+              {/each}
+            </div>
+
+
+            <p class="text-muted-foreground text-xs">
+              This theme appears on your public portfolio page.
+            </p>
+          </div>
+
+          <div class="space-y-2">
+            <Label for="avatarDecoration">Avatar Decoration</Label>
+            <select id="avatarDecoration" class="border rounded px-2 py-1 bg-background" bind:value={avatarDecoration}>
+              <option value="">None</option>
+              <option value="star">⭐ Star</option>
+              <option value="sparkle">✨ Sparkle</option>
+              <option value="fire">🔥 Fire</option>
+              <option value="ice">❄️ Ice</option>
+              {#if $USER_DATA?.username === 'zshadowultra'}
+                <option value="crown">👑 Crown</option>
+              {/if}
+              {#if $USER_DATA?.isAdmin || $USER_DATA?.prestigeLevel > 0}
+                <option value="rainbow">🌈 Rainbow</option>
+              {/if}
             </select>
-            <p class="text-muted-foreground text-xs">This theme appears on your public portfolio page.</p>
+            <p class="text-muted-foreground text-xs">
+              Decorate your avatar with special effects.
+              {#if $USER_DATA?.username === 'zshadowultra'}
+                <br>You have access to the exclusive crown decoration!
+              {:else if $USER_DATA?.isAdmin || $USER_DATA?.prestigeLevel > 0}
+                <br>You have access to premium decorations!
+              {:else}
+                <br>Upgrade to prestige level 1+ or become admin for premium decorations.
+              {/if}
+            </p>
           </div>
 
 					<Button type="submit" disabled={loading || !isDirty || !!nameError}>
