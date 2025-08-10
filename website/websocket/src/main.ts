@@ -203,8 +203,16 @@ const server = Bun.serve<WebSocketData, undefined>({
 					handleSetCoin(ws, data.coinSymbol);
 				} else if (data.type === 'set_user' && data.userId) {
 					handleSetUser(ws, data.userId);
-				} else if (data.type === 'pong') {
+                } else if (data.type === 'pong') {
 					ws.data.lastActivity = Date.now();
+                } else if (data.type === 'typing' && ws.data.userId && typeof data['conversationId'] === 'number') {
+                    // broadcast typing to conversation participants via notifications channel
+                    const payload = JSON.stringify({ type: 'dm_typing', conversationId: data['conversationId'] });
+                    // Here we don't know participants; reuse per-user channels set by set_user
+                    // In a real impl, server would look up participants. For MVP, rely on API to publish typing via Redis
+                    if (ws.data.userId) {
+                        // no-op here; typing events should be published from API via redis in production
+                    }
 				}
 			} catch (error) {
 				console.error('Message parsing error:', error);

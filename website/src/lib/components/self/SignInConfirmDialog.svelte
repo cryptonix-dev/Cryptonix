@@ -13,14 +13,14 @@
 async function onConfirm() {
 		await signIn.social({
 			provider: 'google',
-			callbackURL: `${page.url.pathname}?signIn=1`
+			callbackURL: `${page.url.pathname}?signIn=1&prov=google`
 		});
 	}
 
 async function onDiscord() {
   await signIn.social({
     provider: 'discord',
-    callbackURL: `${page.url.pathname}?signIn=1`
+    callbackURL: `${page.url.pathname}?signIn=1&prov=discord`
   });
 }
 

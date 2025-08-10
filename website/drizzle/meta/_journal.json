@@ -30,6 +30,13 @@
       "when": 1752080000000,
       "tag": "0003_portfolio_theme_and_tickets",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1752080001000,
+      "tag": "0004_friends_and_dm",
+      "breakpoints": true
     }
   ]
 }

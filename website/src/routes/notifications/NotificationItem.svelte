@@ -1,12 +1,32 @@
 <script lang="ts">
     interface Notification {
         type: 'HOPIUM' | 'TRANSFER' | 'RUG_PULL' | 'SYSTEM';
+        title?: string;
+        message?: string;
         link?: string;
         isRead: boolean;
     }
 
     export let notification: Notification;
     export let isNew = false;
+
+    import { Button } from '$lib/components/ui/button';
+    import { goto } from '$app/navigation';
+
+    async function handle(action: 'ACCEPT' | 'DECLINE') {
+        try {
+            const res = await fetch('/api/friends?status=PENDING');
+            if (res.ok) {
+                const { friends } = await res.json();
+                const username = notification?.message?.match(/@(\w+)/)?.[1];
+                const item = friends.find((f: any) => f.requester?.username === username);
+                if (item) {
+                    await fetch('/api/friends', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: item.id, action }) });
+                }
+            }
+            await goto('/messages');
+        } catch {}
+    }
 
     function getNotificationColorClasses(type: string, isNew: boolean, isRead: boolean) {
         const base =
@@ -30,17 +50,14 @@
     }
 </script>
 
-{#if notification.link}
-  <a
-    href={notification.link}
-    class={getNotificationColorClasses(notification.type, isNew, notification.isRead)}
-  >
-    <slot />
-  </a>
-{:else}
-  <div
-    class={getNotificationColorClasses(notification.type, isNew, notification.isRead)}
-  >
-    <slot />
-  </div>
-{/if}
+<div
+  class={getNotificationColorClasses(notification.type, isNew, notification.isRead)}
+>
+  <slot />
+  {#if notification.title === 'Friend request'}
+    <div class="ml-auto flex items-center gap-2">
+      <Button size="sm" onclick={() => handle('ACCEPT')}>Accept</Button>
+      <Button size="sm" variant="outline" onclick={() => handle('DECLINE')}>Decline</Button>
+    </div>
+  {/if}
+</div>

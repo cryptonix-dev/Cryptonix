@@ -12,6 +12,7 @@
 	import { ModeWatcher } from 'mode-watcher';
 	import { page } from '$app/state';
 	import { websocketController } from '$lib/stores/websocket';
+    import { getPublicUrl } from '$lib/utils';
 
 	let { data, children } = $props<{
 		data: { userSession?: any };
@@ -65,8 +66,23 @@
 		);
 
 		const url = new URL(window.location.href);
-		if (url.searchParams.has('signIn')) {
+		if (url.searchParams.has('signIn') || url.searchParams.has('switch')) {
+			// save current account into localStorage for switcher
+			try {
+				const me: any = $USER_DATA;
+				if (me) {
+					const raw = localStorage.getItem('cx_accounts');
+					const list = raw ? (JSON.parse(raw) as any[]) : [];
+					const prov = (url.searchParams.get('prov') as 'google' | 'discord' | null) || undefined;
+					const entry = { id: Number(me.id), name: me.name, username: me.username, image: me.image, provider: prov } as any;
+					const exists = list.find((a) => a.id === entry.id);
+					const next = exists ? list.map((a) => (a.id === entry.id ? { ...a, ...entry } : a)) : [entry, ...list];
+					localStorage.setItem('cx_accounts', JSON.stringify(next.slice(0, 5)));
+				}
+			} catch {}
 			url.searchParams.delete('signIn');
+			url.searchParams.delete('switch');
+			url.searchParams.delete('prov');
 			window.history.replaceState({}, '', url);
 			invalidateAll();
 		}

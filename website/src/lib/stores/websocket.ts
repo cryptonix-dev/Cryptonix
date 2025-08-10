@@ -44,6 +44,10 @@ let activeCoin: string = '@global';
 // Stores
 export const liveTradesStore = writable<LiveTrade[]>([]);
 export const allTradesStore = writable<LiveTrade[]>([]);
+// DM: minimal unread and last message stores
+export const DM_UNREAD = writable<Record<number, number>>({}); // conversationId -> unread count
+export const DM_LAST = writable<Record<number, { content: string; createdAt: string }>>({});
+export const DM_TYPING = writable<Record<number, number>>({}); // conversationId -> timestamp until which typing shown
 export const isConnectedStore = writable<boolean>(false);
 export const isLoadingTrades = writable<boolean>(false);
 export const priceUpdatesStore = writable<Record<string, PriceUpdate>>({});
@@ -217,6 +221,35 @@ function handleWebSocketMessage(event: MessageEvent): void {
                     duration: 5000
                 });
                 break;
+
+            case 'dm_message': {
+                const convoId = Number(message.conversationId);
+                DM_LAST.update(l => ({ ...l, [convoId]: { content: message.content, createdAt: message.createdAt } }));
+                DM_UNREAD.update(m => ({ ...m, [convoId]: (m[convoId] || 0) + 1 }));
+                break;
+            }
+            case 'dm_closed': {
+                const convoId = Number(message.conversationId);
+                DM_LAST.update(l => { const c = { ...l }; delete c[convoId]; return c; });
+                DM_UNREAD.update(m => { const c = { ...m }; delete c[convoId]; return c; });
+                break;
+            }
+
+            case 'dm_typing': {
+                const convoId = Number(message.conversationId);
+                const until = Date.now() + 3000;
+                DM_TYPING.update(t => ({ ...t, [convoId]: until }));
+                // auto-clear after 3s
+                setTimeout(() => {
+                    DM_TYPING.update(t => {
+                        const now = Date.now();
+                        const copy = { ...t } as Record<number, number>;
+                        if (copy[convoId] && copy[convoId] <= now) delete copy[convoId];
+                        return copy;
+                    });
+                }, 3100);
+                break;
+            }
 
             default:
                 console.log('Unhandled message type:', message.type, message);

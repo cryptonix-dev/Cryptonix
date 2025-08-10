@@ -18,11 +18,12 @@
 		Activity,
 		TrendingUp,
 		TrendingDown,
-		User,
+        User,
 		Settings,
 		Gift,
 		Shield,
 		Ticket,
+        MessageSquare,
 		PiggyBank,
 		ChartColumn,
 		TrendingUpDown,
@@ -50,6 +51,8 @@
 	import { liveTradesStore, isLoadingTrades } from '$lib/stores/websocket';
 	import { onMount } from 'svelte';
 	import { UNREAD_COUNT, fetchNotifications } from '$lib/stores/notifications';
+ import { DM_UNREAD } from '$lib/stores/websocket';
+ import SwitchAccountDialog from './SwitchAccountDialog.svelte';
 
 	const data = {
 		navMain: [
@@ -61,7 +64,8 @@
 			{ title: 'Portfolio', url: '/portfolio', icon: BriefcaseBusiness },
 			{ title: 'Treemap', url: '/treemap', icon: ChartColumn },
 			{ title: 'Create coin', url: '/coin/create', icon: Coins },
-			{ title: 'Notifications', url: '/notifications', icon: Bell },
+            { title: 'Notifications', url: '/notifications', icon: Bell },
+            { title: 'Messages', url: '/messages', icon: MessageSquare },
 			{ title: 'About', url: '/about', icon: Info }
 		]
 	};
@@ -71,6 +75,7 @@
 	let shouldSignIn = $state(false);
 	let showPromoCode = $state(false);
 	let showUserManual = $state(false);
+    let showSwitch = $state(false);
 
 	onMount(() => {
 		if ($USER_DATA) {
@@ -155,6 +160,11 @@
 		setOpenMobile(false);
 	}
 
+    function handleSwitchAccount() {
+        showSwitch = true;
+        setOpenMobile(false);
+    }
+
 	function handlePrestigeClick() {
 		goto('/prestige');
 		setOpenMobile(false);
@@ -169,6 +179,7 @@
 <SignInConfirmDialog bind:open={shouldSignIn} />
 <PromoCodeDialog bind:open={showPromoCode} />
 <UserManualModal bind:open={showUserManual} />
+<SwitchAccountDialog bind:open={showSwitch} />
 <Sidebar.Root collapsible="offcanvas">
 	<Sidebar.Header>
         <div class="flex items-center gap-2 px-2 py-2">
@@ -197,10 +208,14 @@
 									>
 										<item.icon />
 										<span>{item.title}</span>
-										{#if item.title === 'Notifications' && $UNREAD_COUNT > 0 && $USER_DATA}
+                                        {#if item.title === 'Notifications' && $UNREAD_COUNT > 0 && $USER_DATA}
 											<Sidebar.MenuBadge class="bg-primary text-primary-foreground">
 												{$UNREAD_COUNT > 99 ? '99+' : $UNREAD_COUNT}
 											</Sidebar.MenuBadge>
+                                        {:else if item.title === 'Messages' && $USER_DATA && Object.keys($DM_UNREAD).length > 0}
+                                            <Sidebar.MenuBadge class="bg-primary text-primary-foreground">
+                                                {Object.values($DM_UNREAD).reduce((a: number, b: number) => a + (b as number), 0)}
+                                            </Sidebar.MenuBadge>
 										{/if}
 									</a>
 								{/snippet}
@@ -466,6 +481,7 @@
 										Light Mode
 									{/if}
 								</DropdownMenu.Item>
+
 							</DropdownMenu.Group>
 
 							{#if $USER_DATA?.isAdmin}
@@ -516,7 +532,11 @@
 
 							<DropdownMenu.Separator />
 
-							<!-- Sign Out -->
+							<!-- Switch & Sign Out -->
+							<DropdownMenu.Item onclick={handleSwitchAccount}>
+								<ChevronsUpDownIcon />
+								Switch account
+							</DropdownMenu.Item>
 							<DropdownMenu.Item
 								onclick={() => {
 									signOut().then(() => {

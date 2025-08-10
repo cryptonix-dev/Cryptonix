@@ -342,3 +342,51 @@ export const supportTicketMessage = pgTable('support_ticket_message', {
         createdIdx: index('idx_ticket_message_created').on(table.createdAt),
     };
 });
+
+// Friends & Direct Messages
+export const friendshipStatusEnum = pgEnum('friendship_status', ['PENDING', 'ACCEPTED', 'BLOCKED']);
+
+export const friendship = pgTable('friendship', {
+    id: serial('id').primaryKey(),
+    requesterId: integer('requester_id').notNull().references(() => user.id, { onDelete: 'cascade' }),
+    addresseeId: integer('addressee_id').notNull().references(() => user.id, { onDelete: 'cascade' }),
+    status: friendshipStatusEnum('status').notNull().default('PENDING'),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+}, (t) => ({
+    requesterIdx: index('idx_friend_requester').on(t.requesterId),
+    addresseeIdx: index('idx_friend_addressee').on(t.addresseeId),
+    uniquePair: unique('uniq_friend_pair').on(t.requesterId, t.addresseeId),
+}));
+
+export const conversation = pgTable('conversation', {
+    id: serial('id').primaryKey(),
+    isGroup: boolean('is_group').notNull().default(false),
+    createdBy: integer('created_by').references(() => user.id, { onDelete: 'set null' }),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+});
+
+export const conversationParticipant = pgTable('conversation_participant', {
+    conversationId: integer('conversation_id').notNull().references(() => conversation.id, { onDelete: 'cascade' }),
+    userId: integer('user_id').notNull().references(() => user.id, { onDelete: 'cascade' }),
+    lastReadMessageId: integer('last_read_message_id'),
+    joinedAt: timestamp('joined_at', { withTimezone: true }).notNull().defaultNow(),
+}, (t) => ({
+    pk: primaryKey({ columns: [t.conversationId, t.userId] }),
+    convoIdx: index('idx_participant_convo').on(t.conversationId),
+    userIdx: index('idx_participant_user').on(t.userId),
+}));
+
+export const message = pgTable('message', {
+    id: serial('id').primaryKey(),
+    conversationId: integer('conversation_id').notNull().references(() => conversation.id, { onDelete: 'cascade' }),
+    senderId: integer('sender_id').notNull().references(() => user.id, { onDelete: 'cascade' }),
+    content: text('content').notNull(),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+    editedAt: timestamp('edited_at', { withTimezone: true }),
+    deletedAt: timestamp('deleted_at', { withTimezone: true }),
+}, (t) => ({
+    convoIdx: index('idx_message_convo').on(t.conversationId),
+    senderIdx: index('idx_message_sender').on(t.senderId),
+    createdIdx: index('idx_message_created').on(t.createdAt),
+}));
