@@ -37,7 +37,8 @@ export const user = pgTable("user", {
 	}).notNull().default("0.00000000"),
 	loginStreak: integer("login_streak").notNull().default(0),
 	prestigeLevel: integer("prestige_level").default(0),
-    portfolioTheme: varchar('portfolio_theme', { length: 20 }).default('default'),
+    	portfolioTheme: varchar('portfolio_theme', { length: 20 }).default('default'),
+	avatarDecoration: varchar('avatar_decoration', { length: 50 }),
     bannerImage: text('banner_image'),
 }, (table) => {
 	return {

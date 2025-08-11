@@ -294,7 +294,7 @@
     <Dialog.Overlay />
 </Dialog.Root>
 
-<div class="container mx-auto max-w-7xl p-6">
+<div class={`min-h-[calc(100dvh-4rem)] container mx-auto max-w-7xl p-6 theme-${($USER_DATA?.portfolioTheme || 'default').replace('gradient-','')}`} style="background: var(--background)"> 
 	<div class="mb-6 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
 		<div>
 			<h1 class="text-3xl font-bold">Portfolio</h1>

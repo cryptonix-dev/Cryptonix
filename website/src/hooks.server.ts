@@ -127,7 +127,8 @@ export const handle: Handle = async ({ event, resolve }) => {
                     isAdmin: user.isAdmin,
                     image: user.image,
                     bannerImage: user.bannerImage,
-                    portfolioTheme: user.portfolioTheme,
+                    		portfolioTheme: user.portfolioTheme,
+		avatarDecoration: user.avatarDecoration,
                     isBanned: user.isBanned,
                     banReason: user.banReason,
                     baseCurrencyBalance: user.baseCurrencyBalance,
@@ -167,7 +168,8 @@ export const handle: Handle = async ({ event, resolve }) => {
                     bio: userRecord.bio || '',
                     volumeMaster: parseFloat(userRecord.volumeMaster || '0.7'),
                     volumeMuted: userRecord.volumeMuted || false,
-                    portfolioTheme: userRecord.portfolioTheme || 'default',
+                    		portfolioTheme: userRecord.portfolioTheme || 'default',
+		avatarDecoration: userRecord.avatarDecoration || null,
                     bannerImage: userRecord.bannerImage || null
                 };
 

@@ -36,7 +36,6 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '$lib/components/ui/tool
 	let quote: QuoteResponse['quote'] | null = $state(null)
     let quoteError = $state<string | null>(null)
     let holdingsBySymbol = $state<Record<string, number>>({})
-    let quoteDebounce: ReturnType<typeof setTimeout> | null = null
 
     onMount(async () => {
         if (symbols.length >= 2) {
@@ -87,22 +86,6 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '$lib/components/ui/tool
 			isQuoting = false
 		}
 	}
-
-    function scheduleQuote() {
-        if (quoteDebounce) clearTimeout(quoteDebounce)
-        quoteDebounce = setTimeout(() => {
-            fetchQuote()
-        }, 250)
-    }
-
-    $effect(() => {
-        // Recalculate when any relevant numeric or pair state changes
-        // Debounced to avoid spamming while typing/scrolling
-        void fromAmount; void slippageBps; void fromSymbol; void toSymbol;
-        if (fromAmount && fromAmount > 0 && fromSymbol && toSymbol && fromSymbol !== toSymbol) {
-            scheduleQuote()
-        }
-    })
 
 	async function handleSwap() {
 		if (!quote) {
@@ -192,49 +175,25 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '$lib/components/ui/tool
         <div class="space-y-2 sm:col-span-2">
             <Label for="amount">Amount ({fromSymbol})</Label>
             <div class="flex items-center gap-2">
-                <Input
-                    id="amount"
-                    class="flex-1"
-                    type="number"
-                    min="0"
-                    step="any"
-                    bind:value={fromAmount}
-                    on:input={scheduleQuote}
-                    on:change={scheduleQuote}
-                    on:keydown={(e) => e.key === 'Enter' && fetchQuote()}
-                />
-                <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onclick={handleMaxClick}
-                    aria-label="Set max"
-                    tabindex="0"
-                >
-                    Max
-                </Button>
-            </div>
-            <div class="text-muted-foreground text-xs">
-                Available: <span class="font-medium">{(holdingsBySymbol[fromSymbol] || 0).toFixed(6)} {fromSymbol}</span>
-            </div>
-            <div class="space-y-1 pt-2">
-                <div class="flex items-center gap-2">
-                    <Label>Slippage</Label>
-                    <Tooltip>
-                        <TooltipTrigger>
-                            <Info class="h-4 w-4" />
-                        </TooltipTrigger>
-                        <TooltipContent>
-                            Slippage tolerance follows SELL trades — no extra tolerance beyond AMM price impact.
-                        </TooltipContent>
-                    </Tooltip>
-                </div>
+                <Button type="button" variant="outline" size="sm" onclick={handleMaxClick} aria-label="Set max" tabindex="0">Max</Button>
+                <Input id="amount" class="flex-1" type="number" min="0" step="any" bind:value={fromAmount} on:input={fetchQuote} />
             </div>
             {#if quote}
                 <p class="text-muted-foreground text-xs">Est. you receive: <span class="font-medium">{quote.coinsOut.toFixed(6)} {toSymbol}</span></p>
             {/if}
         </div>
         <div class="space-y-1">
+            <div class="flex items-center gap-2">
+                <Label>Slippage</Label>
+                <Tooltip>
+                    <TooltipTrigger>
+                        <Info class="h-4 w-4" />
+                    </TooltipTrigger>
+                    <TooltipContent>
+                        Slippage tolerance follows SELL trades — no extra tolerance beyond AMM price impact.
+                    </TooltipContent>
+                </Tooltip>
+            </div>
         </div>
 	</div>
 
