@@ -9,8 +9,6 @@ import { redis, } from '$lib/server/redis';
 import { getSessionKey } from '$lib/server/games/mines';
 
 export const POST: RequestHandler = async ({ request }) => {
-    throw error(503, 'Service temporarily unavailable');
-
     const session = await auth.api.getSession({
         headers: request.headers
     });

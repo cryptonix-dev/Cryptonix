@@ -11,7 +11,7 @@
   import { UserPlus, UserMinus } from 'lucide-svelte';
 
   let shouldSignIn = $state(false);
-  type Thread = { id: number; isGroup: boolean; createdAt: string, otherUser?: { id: number; username: string; name: string; image: string }, lastContent?: string, lastCreatedAt?: string };
+  type Thread = { id: number; isGroup: boolean; createdAt: string, otherUser?: { id: number; username: string; name: string; image: string }, lastContent?: string, lastCreatedAt?: string, unreadCount?: number };
   type Msg = { id: number; senderId: number; content: string; createdAt: string };
   let threads = $state<Thread[]>([]);
   let activeId = $state<number | null>(null);
@@ -161,7 +161,17 @@
 
   async function loadThreads() {
     const res = await fetch('/api/messages?enriched=1');
-    if (res.ok) threads = (await res.json()).conversations as Thread[];
+    if (res.ok) {
+      threads = (await res.json()).conversations as Thread[];
+      // initialize unread store from server counts (non-authoritative; WS will keep live)
+      DM_UNREAD.update(m => {
+        const copy = { ...m } as Record<number, number>;
+        for (const t of threads) {
+          if (typeof t.unreadCount === 'number') copy[t.id] = t.unreadCount;
+        }
+        return copy;
+      });
+    }
   }
   async function loadFriends() {
     const res = await fetch('/api/friends?status=ACCEPTED');
