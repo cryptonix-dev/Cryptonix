@@ -183,7 +183,7 @@
 				Hopium
 			</h1>
 			<p class="text-muted-foreground mb-6">
-				AI-powered prediction markets. Create questions and bet on outcomes.
+				AI-powered prediction markets. Create questions and bet on outcomes. (CURRENTLY NOT WORKING)
 			</p>
 		</div>
 	</header>

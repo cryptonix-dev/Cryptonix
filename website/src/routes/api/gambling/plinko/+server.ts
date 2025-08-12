@@ -3,7 +3,6 @@ import { error, json } from '@sveltejs/kit';
 import { db } from '$lib/server/db';
 import { user } from '$lib/server/db/schema';
 import { eq } from 'drizzle-orm';
-import { randomInt } from 'crypto';
 import type { RequestHandler } from './$types';
 
 interface PlinkoRequest {
@@ -11,38 +10,12 @@ interface PlinkoRequest {
     amount: number;
 }
 
-// Define the multipliers for each risk level and row
-const PLINKO_MULTIPLIERS = {
-    low: [
-        [1.2],
-        [1.1, 1.3],
-        [1.0, 1.2, 1.4],
-        [0.9, 1.1, 1.3, 1.5],
-        [0.8, 1.0, 1.2, 1.4, 1.6],
-        [0.7, 0.9, 1.1, 1.3, 1.5, 1.7],
-        [0.6, 0.8, 1.0, 1.2, 1.4, 1.6, 1.8],
-        [0.5, 0.7, 0.9, 1.1, 1.3, 1.5, 1.7, 1.9]
-    ],
-    medium: [
-        [1.5],
-        [1.2, 1.8],
-        [0.9, 1.5, 2.1],
-        [0.6, 1.2, 1.8, 2.4],
-        [0.3, 0.9, 1.5, 2.1, 2.7],
-        [0, 0.6, 1.2, 1.8, 2.4, 3.0],
-        [0, 0.3, 0.9, 1.5, 2.1, 2.7, 3.3],
-        [0, 0, 0.6, 1.2, 1.8, 2.4, 3.0, 3.6]
-    ],
-    high: [
-        [2.0],
-        [1.5, 2.5],
-        [1.0, 2.0, 3.0],
-        [0.5, 1.5, 2.5, 3.5],
-        [0, 1.0, 2.0, 3.0, 4.0],
-        [0, 0.5, 1.5, 2.5, 3.5, 4.5],
-        [0, 0, 1.0, 2.0, 3.0, 4.0, 5.0],
-        [0, 0, 0.5, 1.5, 2.5, 3.5, 4.5, 5.5]
-    ]
+// Final-slot multipliers to MATCH the UI in `Plinko.svelte`
+// Board uses 9 columns (COLS = 9). Index 0..8 corresponds to the visible slots.
+const SLOT_MULTIPLIERS: Record<'low' | 'medium' | 'high', number[]> = {
+    low:    [0.2, 0.4, 0.6, 0.8, 1.0, 1.2, 1.4, 1.6, 1.8],
+    medium: [0.1, 0.3, 0.7, 1.2, 1.7, 2.2, 2.7, 3.2, 3.7],
+    high:   [0.0, 0.2, 0.5, 1.0, 1.8, 2.6, 3.4, 4.2, 5.0]
 };
 
 export const POST: RequestHandler = async ({ request }) => {
@@ -87,24 +60,29 @@ export const POST: RequestHandler = async ({ request }) => {
                 throw new Error(`Insufficient funds. You need *${roundedAmount.toFixed(2)} but only have *${roundedBalance.toFixed(2)}`);
             }
 
-            // Simulate ball drop (8 rows of pegs)
-            const path = [];
-            let position = 0; // Start in the middle
-            path.push(position);
-            
-            for (let i = 0; i < 7; i++) {
-                // 50/50 chance to go left or right at each peg
-                position += Math.random() < 0.5 ? 0 : 1;
-                path.push(position);
+            // Simulate ball drop on a board with 8 rows of pegs and 9 slots at the bottom
+            // Outputs:
+            // - uiPath: absolute X positions in range [0..8] for the UI animation
+            // - finalSlotIndex: bottom slot index [0..8] used to select multiplier
+            const uiPath: number[] = [];
+            const COLS = 9; // must match UI
+            const ROWS = 8; // peg rows
+            let uiX = Math.floor((COLS - 1) / 2); // start centered (4)
+            uiPath.push(uiX);
+
+            for (let i = 0; i < ROWS - 1; i++) {
+                const goRight = Math.random() >= 0.5;
+                uiX += goRight ? 1 : -1;
+                uiX = Math.max(0, Math.min(COLS - 1, uiX)); // clamp within board
+                uiPath.push(uiX);
             }
 
-            // Get the final position (0-7)
-            const finalPosition = path[path.length - 1];
-            
-            // Get the multiplier based on risk level and final position
-            const multiplier = PLINKO_MULTIPLIERS[risk][7][finalPosition];
-            const payout = roundedAmount * multiplier;
-            const newBalance = roundedBalance - roundedAmount + payout;
+            const finalSlotIndex = uiX; // 0..8
+
+            // Multiplier must align with UI
+            const multiplier = SLOT_MULTIPLIERS[risk][finalSlotIndex];
+            const payout = Math.round((roundedAmount * multiplier) * 100000000) / 100000000;
+            const newBalance = Math.round((roundedBalance - roundedAmount + payout) * 100000000) / 100000000;
 
             // Update user balance
             await tx
@@ -117,7 +95,7 @@ export const POST: RequestHandler = async ({ request }) => {
 
             return {
                 won: payout > 0,
-                path,
+                path: uiPath,
                 multiplier,
                 payout,
                 amountWagered: roundedAmount,

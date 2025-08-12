@@ -18,6 +18,7 @@
 	// Game state
 	let betAmount = $state(10);
 	let autoCashOut = $state(2);
+	let lastBetAmount = $state<number | null>(null);
 	let gameState = $state<{
 		active: boolean;
 		crashed: boolean;
@@ -94,7 +95,7 @@
 	}
 
 	// Play sound effect
-	function playSound(type: 'win' | 'lose' | 'cashout' | 'crash' | 'tick') {
+    function playSound(type: 'win' | 'lose' | 'cashout' | 'crash' | 'tick') {
 		if ($volumeSettings.muted) return;
 		
 		const audio = new Audio();
@@ -102,19 +103,22 @@
 		
 		switch (type) {
 			case 'win':
-				audio.src = '/sounds/win.mp3';
+                audio.src = '/sound/win.mp3';
 				break;
 			case 'lose':
-				audio.src = '/sounds/lose.mp3';
+                audio.src = '/sound/lose.mp3';
 				break;
 			case 'cashout':
-				audio.src = '/sounds/cashout.mp3';
+                // Fallback to win sound (no dedicated cashout asset)
+                audio.src = '/sound/win.mp3';
 				break;
 			case 'crash':
-				audio.src = '/sounds/crash.mp3';
+                // Fallback to lose sound (no dedicated crash asset)
+                audio.src = '/sound/lose.mp3';
 				break;
 			case 'tick':
-				audio.src = '/sounds/tick.mp3';
+                // Fallback to click sound (no dedicated tick asset)
+                audio.src = '/sound/click.mp3';
 				break;
 		}
 		
@@ -124,7 +128,10 @@
 	// Update game state from server
 	async function updateGameState() {
 		try {
-			const response = await fetch('/api/gambling/crash' + (gameState.gameId ? `?gameId=${gameState.gameId}` : ''));
+			const response = await fetch('/api/gambling/crash' + (gameState.gameId ? `?gameId=${gameState.gameId}` : ''), {
+				credentials: 'include',
+				cache: 'no-store'
+			});
 			const data = await response.json();
 
 			if (data.active !== gameState.active || data.crashed !== gameState.crashed) {
@@ -269,6 +276,8 @@
 				gameId: result.gameId
 			};
 
+			lastBetAmount = betAmount;
+
 			// Update balance
 			if (onBalanceUpdate) {
 				onBalanceUpdate(result.newBalance);
@@ -290,6 +299,7 @@
 				headers: {
 					'Content-Type': 'application/json'
 				},
+				credentials: 'include',
 				body: JSON.stringify({
 					gameId: gameState.gameId,
 					multiplier: gameState.multiplier
@@ -458,6 +468,13 @@
 						class="text-right"
 						disabled={playerState.hasBet && !playerState.cashedOut}
 					/>
+					<div class="mt-2 grid grid-cols-5 gap-2">
+						<Button size="sm" variant="outline" on:click={() => betAmount = Math.max(0.01, betAmount / 2)} disabled={playerState.hasBet && !playerState.cashedOut}>÷2</Button>
+						<Button size="sm" variant="outline" on:click={() => betAmount = Math.min(balance, betAmount * 2)} disabled={playerState.hasBet && !playerState.cashedOut}>x2</Button>
+						<Button size="sm" variant="outline" on:click={() => betAmount = 0.01} disabled={playerState.hasBet && !playerState.cashedOut}>Min</Button>
+						<Button size="sm" variant="outline" on:click={() => betAmount = Math.max(0.01, balance)} disabled={playerState.hasBet && !playerState.cashedOut}>Max</Button>
+						<Button size="sm" on:click={() => lastBetAmount && (betAmount = Math.min(balance, lastBetAmount))} disabled={playerState.hasBet && !playerState.cashedOut || lastBetAmount === null}>Repeat</Button>
+					</div>
 				</div>
 
 				<!-- Auto Cash Out -->
@@ -475,6 +492,13 @@
 						onValueChange={(e) => autoCashOut = e[0]}
 						disabled={playerState.hasBet && !playerState.cashedOut}
 					/>
+					<div class="mt-2 grid grid-cols-5 gap-2">
+						<Button size="sm" variant="outline" on:click={() => autoCashOut = 1.5} disabled={playerState.hasBet && !playerState.cashedOut}>1.5x</Button>
+						<Button size="sm" variant="outline" on:click={() => autoCashOut = 2} disabled={playerState.hasBet && !playerState.cashedOut}>2x</Button>
+						<Button size="sm" variant="outline" on:click={() => autoCashOut = 3} disabled={playerState.hasBet && !playerState.cashedOut}>3x</Button>
+						<Button size="sm" variant="outline" on:click={() => autoCashOut = 5} disabled={playerState.hasBet && !playerState.cashedOut}>5x</Button>
+						<Button size="sm" variant="outline" on:click={() => autoCashOut = 10} disabled={playerState.hasBet && !playerState.cashedOut}>10x</Button>
+					</div>
 					<div class="flex justify-between text-xs text-muted-foreground mt-1">
 						<span>1.00x</span>
 						<span>10.00x</span>

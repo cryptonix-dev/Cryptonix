@@ -13,9 +13,9 @@ sudo apt update && sudo apt upgrade -y
 echo "🔧 Installing essential packages..."
 sudo apt install -y curl wget git unzip software-properties-common apt-transport-https ca-certificates gnupg lsb-release
 
-# Install Node.js 18.x
-echo "📥 Installing Node.js 18.x..."
-curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+# Install Node.js 20.x
+echo "📥 Installing Node.js 20.x..."
+curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
 sudo apt-get install -y nodejs
 
 # Install PostgreSQL

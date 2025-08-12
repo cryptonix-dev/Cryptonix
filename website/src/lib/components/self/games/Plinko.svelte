@@ -67,6 +67,34 @@
 		}
 	}
 
+	// Quick bet helpers
+	let lastBetAmount = $state<number | null>(null);
+
+	function clampBet(value: number): number {
+		if (!Number.isFinite(value)) return betAmount;
+		return Math.max(0.01, Math.min(value, Math.min(1000000, balance)));
+	}
+
+	function setMinBet() {
+		betAmount = 0.01;
+	}
+
+	function setMaxBet() {
+		betAmount = clampBet(balance);
+	}
+
+	function doubleBet() {
+		betAmount = clampBet(betAmount * 2);
+	}
+
+	function halveBet() {
+		betAmount = clampBet(betAmount / 2);
+	}
+
+	function repeatLastBet() {
+		if (lastBetAmount) betAmount = clampBet(lastBetAmount);
+	}
+
 	// Handle risk level change
 	function setRiskLevel(level: 'low' | 'medium' | 'high') {
 		riskLevel = level;
@@ -126,7 +154,7 @@
 	}
 
 	// Play sound effect
-	function playSound(type: 'win' | 'lose' | 'drop') {
+    function playSound(type: 'win' | 'lose' | 'drop') {
 		if ($volumeSettings.muted) return;
 		
 		const audio = new Audio();
@@ -134,13 +162,14 @@
 		
 		switch (type) {
 			case 'win':
-				audio.src = '/sounds/win.mp3';
+                audio.src = '/sound/win.mp3';
 				break;
 			case 'lose':
-				audio.src = '/sounds/lose.mp3';
+                audio.src = '/sound/lose.mp3';
 				break;
 			case 'drop':
-				audio.src = '/sounds/drop.mp3';
+                // Fallback to click sound (no dedicated drop asset)
+                audio.src = '/sound/click.mp3';
 				break;
 		}
 			audio.play().catch(e => console.error('Error playing sound:', e));
@@ -159,6 +188,7 @@
 				headers: {
 					'Content-Type': 'application/json'
 				},
+				credentials: 'include',
 				body: JSON.stringify({
 					risk: riskLevel,
 					amount: betAmount
@@ -172,6 +202,7 @@
 
 			const result = await response.json();
 			gameResult = result;
+			lastBetAmount = betAmount;
 
 			// Update balance
 			if (onBalanceUpdate) {
@@ -194,9 +225,13 @@
 
 	// Calculate if a cell should have a peg
 	function hasPeg(row: number, col: number): boolean {
-		// Only place pegs in positions where row + col is even
-		// This creates the classic triangular peg pattern
-		return (row + col) % 2 === 0 && row < ROWS - 1;
+		// Create a centered triangular peg layout
+		if (row >= ROWS - 1) return false;
+		const mid = Math.floor((COLS - 1) / 2);
+		const minCol = Math.max(0, mid - row);
+		const maxCol = Math.min(COLS - 1, mid + row);
+		if (col < minCol || col > maxCol) return false;
+		return ((col - minCol) % 2) === 0;
 	}
 
 	// Format currency
@@ -217,7 +252,7 @@
 			<div class="bg-card rounded-lg p-4 mb-4">
 				<div class="relative h-[400px] w-full bg-background rounded-lg overflow-hidden">
 					<!-- Peg Board -->
-					<div class="absolute inset-0 grid grid-cols-{COLS} grid-rows-{ROWS} gap-2 p-4">
+					<div class="absolute inset-0 grid grid-cols-{COLS} grid-rows-{ROWS} gap-2 p-4" style="--cols: {COLS}; --rows: {ROWS};">
 						{#each Array(ROWS) as _, row}
 							{#each Array(COLS) as _, col}
 								<div class="relative flex items-center justify-center">
@@ -286,6 +321,13 @@
 						class="text-right"
 						disabled={isDropping}
 					/>
+					<div class="mt-2 grid grid-cols-5 gap-2">
+						<Button size="sm" variant="outline" on:click={halveBet} disabled={isDropping}>÷2</Button>
+						<Button size="sm" variant="outline" on:click={doubleBet} disabled={isDropping}>x2</Button>
+						<Button size="sm" variant="outline" on:click={setMinBet} disabled={isDropping}>Min</Button>
+						<Button size="sm" variant="outline" on:click={setMaxBet} disabled={isDropping}>Max</Button>
+						<Button size="sm" on:click={repeatLastBet} disabled={isDropping || lastBetAmount === null}>Repeat</Button>
+					</div>
 				</div>
 
 				<!-- Risk Level -->
@@ -318,9 +360,9 @@
 						</Button>
 					</div>
 					<div class="mt-2 text-xs text-muted-foreground">
-						{riskLevel === 'low' && 'Lower risk, lower rewards'}
-						{riskLevel === 'medium' && 'Balanced risk and rewards'}
-						{riskLevel === 'high' && 'Higher risk, higher rewards'}
+						{#if riskLevel === 'low'}Lower risk, lower rewards{/if}
+						{#if riskLevel === 'medium'}Balanced risk and rewards{/if}
+						{#if riskLevel === 'high'}Higher risk, higher rewards{/if}
 					</div>
 				</div>
 

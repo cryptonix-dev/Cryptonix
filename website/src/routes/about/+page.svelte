@@ -64,7 +64,7 @@
 					<p class="text-muted-foreground text-sm">
 						Practice trading strategies, create your own coins, and learn about market dynamics
 						without any real financial risk. Experience AMM trading, liquidity pools, and even rug
-						pulls. (duh)
+						pulls. (duh) Some features wont work at the moment. The domain is wrong right now since we dont have a domain for this project "yet"
 					</p>
 					<p class="text-muted-foreground text-sm">
 						Join the community of degenerates where paranoia is profitable!
@@ -123,12 +123,12 @@
 			</CardHeader>
 			<CardContent>
 				<div class="space-y-4">
-					<p class="text-muted-foreground text-sm">Created by <strong>FaceDev</strong></p>
+					<p class="text-muted-foreground text-sm">Created by <strong>the Cryptonix team.</strong></p>
 					<div class="flex flex-wrap gap-2">
 						<Button
 							variant="outline"
 							size="sm"
-							href="https://youtube.com/@FaceDevStuff"
+							href="https://youtube.com/"
 							target="_blank"
 							rel="noopener"
 						>
@@ -138,7 +138,7 @@
 						<Button
 							variant="outline"
 							size="sm"
-							href="https://x.com/facedevstuff"
+							href="https://x.com/"
 							target="_blank"
 							rel="noopener"
 						>
@@ -148,7 +148,7 @@
 						<Button
 							variant="outline"
 							size="sm"
-							href="https://github.com/outpoot/Cryptonix"
+							href="https://github.com/cryptonix-dev"
 							target="_blank"
 							rel="noopener"
 						>
@@ -158,7 +158,7 @@
 						<Button
 							variant="outline"
 							size="sm"
-							href="https://discord.gg/facedev"
+							href="https://discord.gg/"
 							target="_blank"
 							rel="noopener"
 						>
